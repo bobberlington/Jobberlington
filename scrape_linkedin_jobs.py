@@ -71,8 +71,17 @@ Defaults to searching for everything otherwise
 """
 
 
-def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter=None, salary_filter=0, duplicate_job_threshold=3, max_jobs=-1):
-    driver = webdriver.Chrome()  # Adjust the WebDriver path
+def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter=None, salary_filter=0, duplicate_job_threshold=3, max_jobs=-1, browser="", location=""):
+    if browser == "chrome":
+        driver = webdriver.Chrome()
+    elif browser == "firefox":
+        driver = webdriver.Firefox()
+    elif browser == "safari":
+        driver = webdriver.Safari()
+    elif browser == "edge":
+        driver = webdriver.Edge()
+    else:
+        driver = webdriver.Chrome()
 
     driver.get("https://www.linkedin.com/jobs")
     try:
@@ -147,6 +156,15 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
     job_postings = []
     job_counts = {}
 
+    if location != "":
+        location_bar = driver.find_element(By.XPATH, '//input[contains(@id, "jobs-search-box-location-id-ember")]')
+        location_bar.click()
+        location_bar.clear()
+        location_bar.send_keys(location)
+        location_bar.send_keys(Keys.RETURN)
+        location_bar.send_keys(Keys.RETURN)
+        time.sleep(3)
+
     if date_filter in [1, 2, 3]:
         date_filter_button = driver.find_element(By.XPATH, '//button[contains(@id, "searchFilter_timePostedRange")]')
         date_filter_button.click()
@@ -200,7 +218,10 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
                 job = jobs[i]
             except IndexError:
                 break
-            driver.execute_script("return arguments[0].scrollIntoView(true);", job)
+            try:
+                driver.execute_script("return arguments[0].scrollIntoView(true);", job)
+            except:
+                break
             jobs = driver.find_elements(By.XPATH, '//div[contains(@class, "job-card-container--clickable")]')
             job.click()
             time.sleep(0.75)
@@ -226,13 +247,19 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
                 details = job_card.find_element(By.XPATH, './/div[contains(@class, "job-details-jobs-unified-top-card__primary-description-without-tagline mb2")]').text
             except NoSuchElementException:
                 details = "N/A"
+            try:
+                logo = job.find_elements(By.XPATH, '//img[contains(@class, "ivm-view-attr__img--centered EntityPhoto-square-4   evi-image lazy-image ember-view")]')[i].get_attribute("src")
+            except:
+                logo = "https://i.imgur.com/e60FoKF.png"
+            print(logo)
             job_dict = {
                 'title': title,
                 'company': company,
                 'description': description,
                 'description_html': description_full,
                 'details' : details,
-                'url' : driver.current_url
+                'url' : driver.current_url,
+                'logo' : logo
             }
             if company in job_counts:
                 job_counts[company] += 1
@@ -241,7 +268,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
             if job_counts[company] > duplicate_job_threshold:
                 continue
             job_postings.append(job_dict)
-            if max_jobs != -1 and len(job_postings) > max_jobs:
+            if max_jobs != -1 and len(job_postings) >= max_jobs:
                 max_jobs_found = True
                 break
             print(job_dict)
