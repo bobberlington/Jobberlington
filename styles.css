@@ -1,0 +1,54 @@
+.body{
+    background: #000000
+}
+
+.odd-job{
+    background-color: #808080;
+}
+
+.even-job{
+    background-color: #c0c0c0;
+}
+
+.logo img {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    left: 40%;
+}
+
+.job{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    border:1px solid black;
+}
+
+.score-0{
+    background: rgb(255,101,101);
+    background: linear-gradient(90deg, rgba(255,101,101,1) 0%, rgba(168,0,0,1) 100%);
+}
+
+.score-1{
+    background: rgb(255,154,0);
+    background: linear-gradient(90deg, rgba(255,154,0,1) 0%, rgba(213,125,0,1) 100%);
+}
+
+.score-2{
+    background: rgb(255,212,131);
+    background: linear-gradient(90deg, rgba(255,212,131,1) 0%, rgba(255,240,121,1) 100%);
+}
+
+.score-3{
+    background: rgb(121,255,130);
+    background: linear-gradient(90deg, rgba(121,255,130,1) 0%, rgba(23,148,0,1) 100%);
+}
+
+.score-4{
+    background: rgb(133,255,231);
+    background: linear-gradient(90deg, rgba(133,255,231,1) 0%, rgba(0,148,97,1) 100%);
+}
+
+.analysis{
+    background: rgba(0,0,0,.20);
+    color: #000000;
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Listed Jobs</title>
+
+	<!-- Meta Tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Bootstrap 5 based Social Media Network and Community Theme">
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="https://i.imgur.com/e60FoKF.png">
+
+	<!-- Google Font -->
+	<link rel="preconnect" href="https://fonts.googleapis.com/">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/css2.css') }}">
+
+
+	<!-- Theme CSS -->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+<style></style><style></style></head>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+
+	<!-- Container START -->
+	<div class="container">
+		<div class="row g-4">
+
+
+			<!-- Main content START -->
+			<div class="col-md-8 col-lg-6 vstack gap-4">
+
+<div class="card">
+					<!-- Card header START -->
+					<div class="card-header border-0 pb-0">
+						<div class="d-flex align-items-center justify-content-between">
+							<div class="d-flex align-items-center">
+								<!-- Info -->
+								<div>
+									<div class="nav nav-divider">
+										<h6 class="nav-item card-title mb-0">Jobberlington</h6>
+									</div>
+									<p class="mb-0 small"></p>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!-- Card header END -->
+					<!-- Card body START -->
+					<div class="card-body">
+						<form action="{{ url_for('home') }}" method="POST">
+							<div class=my-wrapper-text>
+								<input type="text" placeholder="LinkedIn Search Query" class="search-query" name="search-query">
+							</div>
+							<div class=my-wrapper-text>
+								<input type="text" placeholder="Job Location" class="search-query" name="job-location">
+							</div>
+							<div class="my-wrapper-text">
+								<textarea placeholder="Input Resume" class="resume" name="resume"></textarea>
+							</div>
+							<div class=my-wrapper-inputs>
+								<div class="pages">
+									<div class="input-label">
+										<b>Number of pages of jobs to look through:</b>
+									</div>
+									<input type="number" id="page-count" name="page-count" class="pages-input">
+								</div>
+								<div class="time">
+									<div class="input-label"><b>Job Posting Timespan</b></div>
+									<div>
+										<input type="radio" name="job-time" id="any" value="0">
+										<label for="any">Any</label><br>
+										<input type="radio" name="job-time" id="month" value="1">
+										<label for="month">Last Month</label><br>
+										<input type="radio" name="job-time" id="week" value="2">
+										<label for="week">Last Week</label><br>
+										<input type="radio" name="job-time" id="day" value="3">
+										<label for="day">Last 24 Hours</label><br>
+
+									</div>
+								</div>
+								<div class="experience">
+									<div class="input-label"><b>Job Experience Level</b></div>
+									<div>
+										<input type="checkbox" name="job-experience" id="Internship" value="1">
+										<label for="Internship">Internship</label><br>
+										<input type="checkbox" name="job-experience" id="Entry Level" value="2">
+										<label for="Entry Level">Entry Level</label><br>
+										<input type="checkbox" name="job-experience" id="Associate" value="3">
+										<label for="Associate">Associate</label><br>
+										<input type="checkbox" name="job-experience" id="Mid-Senior" value="4">
+										<label for="Mid-Senior">Mid-Senior</label><br>
+										<input type="checkbox" name="job-experience" id="Director" value="5">
+										<label for="Director">Director</label><br>
+										<input type="checkbox" name="job-experience" id="Executive" value="6">
+										<label for="Executive">Executive</label><br>
+									</div>
+								</div>
+
+								<div class="salary">
+									<div class="input-label"><b>Salary</b></div>
+									<div>
+										<input type="radio" name="salary" id="salary-0" value="0">
+										<label for="salary-0">Any</label><br>
+										<input type="radio" name="salary" id="salary-1" value="1">
+										<label for="salary-1">$40k+</label><br>
+										<input type="radio" name="salary" id="salary-2" value="2">
+										<label for="salary-2">$60k+</label><br>
+										<input type="radio" name="salary" id="salary-3" value="3">
+										<label for="salary-3">$80k+</label><br>
+										<input type="radio" name="salary" id="salary-4" value="4">
+										<label for="salary-4">$100k+</label><br>
+										<input type="radio" name="salary" id="salary-5" value="5">
+										<label for="salary-5">$120k+</label><br>
+										<input type="radio" name="salary" id="salary-6" value="6">
+										<label for="salary-6">$140k+</label><br>
+										<input type="radio" name="salary" id="salary-7" value="7">
+										<label for="salary-7">$160k+</label><br>
+										<input type="radio" name="salary" id="salary-8" value="8">
+										<label for="salary-8">$180k+</label><br>
+										<input type="radio" name="salary" id="salary-9" value="9">
+										<label for="salary-9">$200k+</label><br>
+									</div>
+								</div>
+								<input type="submit" id="Submit" value="Search Jobs" class="submit-button">
+							</div>
+						</form>
+
+
+
+
+					</div>
+					<!-- Card body END -->
+					<!-- Card footer START -->
+					<div class="card-footer border-0 pt-0">
+
+					</div>
+					<!-- Card footer END -->
+				</div>
+				<!-- Card feed item END -->
+
+
+			</div>
+			<!-- Main content END -->
+
+
+		</div> <!-- Row END -->
+	</div>
+	<!-- Container END -->
+
+</main>
+<!-- **************** MAIN CONTENT END **************** -->
+
+
+		</div>
+	</div>
+</div>
+<!-- Modal create feed END -->
+
+
+
+<!-- =======================
+JS libraries, plugins and custom scripts -->
+
+<!-- Bootstrap JS -->
+
+
+
+
+</body></html>
