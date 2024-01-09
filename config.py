@@ -38,9 +38,8 @@ linkedin_salary = 3
 # If jobs from the same company are found this number of times, further jobs are ignored.
 duplicate_job_threshold = 3
 
-# Max number of jobs that are pulled.
-max_jobs = 5
+# Max number of jobs that are pulled. -1 means it goes until we reach the number of pages.
+max_jobs = -1
 
-
-
-# TODO: Add location parameter, threshold for duplicate jobs
+# Location to search jobs in
+job_location = "California, United States"
