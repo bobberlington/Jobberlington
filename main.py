@@ -3,8 +3,8 @@ from evaluate_jobs import analyze_job_fit
 import json
 from json.decoder import JSONDecodeError
 from credentials import resume
-from config import search_query, linkedin_salary, linkedin_experience, linkedin_pages, linkedin_date, duplicate_job_threshold, max_jobs
-from generate_html import create_job_html
+from config import search_query, linkedin_salary, linkedin_experience, linkedin_pages, linkedin_date, duplicate_job_threshold, max_jobs, job_location
+from generate_htmltest import create_job_html
 
 jobs = scrape_linkedin_jobs(search_query,
                             pages=linkedin_pages,
@@ -12,7 +12,8 @@ jobs = scrape_linkedin_jobs(search_query,
                             salary_filter=linkedin_salary,
                             experience_filter=linkedin_experience,
                             duplicate_job_threshold=duplicate_job_threshold,
-                            max_jobs=max_jobs)
+                            max_jobs=max_jobs,
+                            location=job_location)
 print(jobs)
 jobs_analysis = []
 
@@ -28,6 +29,7 @@ for job in jobs:
         job_dict["Details"] = job["details"]
         job_dict["Description"] = job["description"]
         job_dict["Description_Html"] = job["description_html"]
+        job_dict["Logo"] = job["logo"]
 
         print(job_dict)
         jobs_analysis.append(job_dict)
