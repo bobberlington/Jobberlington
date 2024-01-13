@@ -7,6 +7,9 @@ __pycache__/
 *.so
 
 *.DS_STORE
+database_stuff.py
+export_jobs.py
+generate_htmltest.py
 credentials.json
 credentials.py
 token.json
@@ -16,6 +19,7 @@ cookies.pkl
 sample_html_card.html
 sample_html_head.html
 open_input.py
+remake_database.py
 
 
 # Distribution / packaging
