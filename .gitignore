@@ -12,9 +12,10 @@ credentials.py
 token.json
 jobs/*
 cookies.pkl
-.idea/*
+.idea*
 sample_html_card.html
 sample_html_head.html
+open_input.py
 
 
 # Distribution / packaging
