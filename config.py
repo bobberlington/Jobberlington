@@ -2,14 +2,14 @@
 search_query = "Software Engineer"
 
 # Number of pages to search in LinkedIn.
-linkedin_pages = 1
+linkedin_pages = 5
 
 # Which date range to search in
 # 1: Searches for jobs in the "past month"
 # 2: Searches for jobs in the "past week"
 # 3: Searches for jobs in the "past 24 hours"
 # Defaults to "any time" otherwise
-linkedin_date = 3
+linkedin_date = 2
 
 # Experience levels to search for in Linkedin.
 # 1 - Whether to search "Internship" or not
@@ -36,7 +36,7 @@ linkedin_experience = [2]
 linkedin_salary = 3
 
 # If jobs from the same company are found this number of times, further jobs are ignored.
-duplicate_job_threshold = 3
+duplicate_job_threshold = 1
 
 # Max number of jobs that are pulled. -1 means it goes until we reach the number of pages.
 max_jobs = -1

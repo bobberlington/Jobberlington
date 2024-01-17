@@ -62,12 +62,30 @@
 							<div class="my-wrapper-text">
 								<textarea placeholder="Input Resume" class="resume" name="resume"></textarea>
 							</div>
+							<div>
+									<div>
+										<b>Keywords you want to exclude. Separate keywords with commas.</b>
+									</div>
+									<textarea placeholder="Excluded words" class="blacklist" name="blacklist"></textarea>
+							</div>
 							<div class=my-wrapper-inputs>
+								<div>
+									<div class="input-label">
+										<b>Max jobs to search for (0 value means it will just go through all pages)</b>
+									</div>
+									<input type="number" id="max-jobs" name="max-jobs" class="max-jobs" min="0" max="1000" value="0">
+								</div>
+								<div>
+									<div class="input-label">
+										<p><b>Ignore jobs duplicated in the database</b></p>
+									</div>
+									<input type="checkbox" id="dupe-jobs" name="dupe-jobs" value="1">
+								</div>
 								<div class="pages">
 									<div class="input-label">
 										<b>Number of pages of jobs to look through:</b>
 									</div>
-									<input type="number" id="page-count" name="page-count" class="pages-input">
+									<input type="number" id="page-count" name="page-count" class="pages-input" min="1" max="5" value="1">
 								</div>
 								<div class="time">
 									<div class="input-label"><b>Job Posting Timespan</b></div>
@@ -127,6 +145,7 @@
 									</div>
 								</div>
 								<input type="submit" id="Submit" value="Search Jobs" class="submit-button">
+								<a href="/output"> View analyzed jobs</a>
 							</div>
 						</form>
 

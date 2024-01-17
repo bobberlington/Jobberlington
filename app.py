@@ -6,8 +6,9 @@ from evaluate_jobs import analyze_job_fit
 import json
 from json.decoder import JSONDecodeError
 from credentials import resume
-from config import search_query, linkedin_salary, linkedin_experience, linkedin_pages, linkedin_date, duplicate_job_threshold, max_jobs
 from generate_htmltest import create_job_html
+import sqlite3
+from datetime import datetime
 
 UPLOAD_FOLDER = "tmp"
 OUTPUT_FOLDER = "output"
@@ -27,6 +28,29 @@ def allowed_file(filename):
 @app.route('/', methods=["GET", "POST"])
 def home():
     if request.method == "POST":
+        # Try to make SQL database. If it exists, no problem.
+        con = sqlite3.connect("jobs.db")
+        cur = con.cursor()
+        try:
+            cur.execute("""CREATE TABLE jobs(
+                            id integer PRIMARY KEY AUTOINCREMENT,
+                            date datetime,
+                            score integer,
+                            company varchar,
+                            title varchar,
+                            url varchar,
+                            details varchar,
+                            description varchar,
+                            analysis varchar,
+                            logo varchar,
+                            description_html varchar,
+                            relevant_field boolean,
+                            relevant_skills boolean
+                        );""")
+        except sqlite3.OperationalError:
+            pass
+
+        # Try to detect browser of the user. Selenium will use the browser
         browser = request.headers.get('User-Agent')
         if "Firefox" in browser:
             browser = "firefox"
@@ -39,6 +63,8 @@ def home():
         else:
             browser = "other"
         print(browser)
+
+        # Get the inputs from all the forms
         search = request.form.get("search-query")
         if search == None:
             search = ""
@@ -46,6 +72,18 @@ def home():
         if job_location == None:
             job_location = ""
         resume = request.form.get("resume")
+        try:
+            max_jobs = int(request.form.get("max-jobs"))
+        except TypeError:
+            max_jobs = 0
+
+        excluded_words = request.form.get("blacklist")
+        if excluded_words == None:
+            excluded_words = []
+        else:
+            excluded_words = excluded_words.split(",")
+            for i in range(len(excluded_words)):
+                excluded_words[i] = excluded_words[i].strip()
         try:
             pages = int(request.form.get("page-count"))
         except TypeError:
@@ -62,6 +100,11 @@ def home():
             job_experience = request.form.getlist("job-experience")
         except TypeError:
             job_experience = []
+        try:
+            dupe_jobs = int(request.form.get("dupe-jobs"))
+        except TypeError:
+            dupe_jobs = 99999
+        print(dupe_jobs)
         print(f"""
         search: {search}
         resume: {resume}
@@ -69,187 +112,95 @@ def home():
         job_time: {job_time}
         salary: {salary}
         job_experience: {job_experience}
+        max_jobs: {max_jobs}
                """)
         jobs = scrape_linkedin_jobs(search,
                                     pages=pages,
                                     date_filter=job_time,
                                     salary_filter=salary,
                                     experience_filter=job_experience,
-                                    duplicate_job_threshold=duplicate_job_threshold,
+                                    duplicate_job_threshold=dupe_jobs,
                                     max_jobs=max_jobs,
                                     browser=browser,
                                     location=job_location)
-        return f"""
-        search: {search_query}
-        resume: {resume}
-        pages: {pages}
-        job_time: {job_time}
-        salary: {salary}
-        job_experience: {job_experience}
-               """
+        print(jobs)
+        # Send jobs into chatgpt, insert into database
+        db_insert = []
+        for job in jobs:
+            # Ignore duped jobs
+            check_dupes = cur.execute("SELECT * FROM JOBS WHERE (title = ? AND company = ?)",
+                                      (job["title"], job["company"])).fetchall()
+            if check_dupes is not None and dupe_jobs == 1:
+                continue
+            analysis = analyze_job_fit(job["description"], resume)
+            print(job["company"])
+            print(job["title"])
+            try:
+                job_dict = json.loads(analysis)
+
+                if not job_dict["relevant_field"] or not job_dict["relevant_skills"]:
+                    job_dict["confidence_rating"] = 0
+                job_dict["company"] = job["company"]
+                job_dict["title"] = job["title"]
+                job_dict["url"] = job["url"]
+                job_dict["details"] = job["details"]
+                job_dict["description"] = job["description"]
+                job_dict["description_html"] = job["description_html"]
+                job_dict["logo"] = job["logo"]
+
+                print(job_dict)
+
+                db_insert.append((datetime.now(), job_dict["confidence_rating"], job_dict["company"], job_dict["title"],
+                                  job_dict["url"], job_dict["details"], job_dict["description"],
+                                  job_dict["requirements_analysis"], job_dict["relevant_field"],
+                                  job_dict["relevant_skills"], job_dict["logo"], job_dict["description_html"]))
+
+            except JSONDecodeError:
+                print("Not a json! Maybe ChatGPT was acting up.")
+                print(analysis)
+        cur.executemany(f""" INSERT INTO jobs (date, score, company, title, url, details, description, analysis, relevant_field, relevant_skills, logo, description_html)
+                    VALUES (?, 
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?
+                            );
+                    """, db_insert)
+        con.commit()
+
+        return redirect(url_for("output"))
     return render_template("search_input.html")
 
-"""
-@app.route('/loanwithdrawal', methods=["GET", "POST"])
-def loan_withdrawal_upload():
-    # Upload a file.
-    if request.method == 'POST':
-        if 'file1' not in request.files or 'file2' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file1 = request.files['file1']
-        file2 = request.files['file2']
-        if file1.filename == '' or file2.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file1 and file2 and allowed_file(file1.filename) and allowed_file(file2.filename):
-            filename1 = secure_filename(file1.filename)
-            filename2 = secure_filename(file2.filename)
-            file1.save(os.path.join(app.config['UPLOAD_FOLDER'], filename1))
-            file2.save(os.path.join(app.config['UPLOAD_FOLDER'], filename2))
-            try:
-                files = compare_jsons(os.path.join(app.config['UPLOAD_FOLDER'], filename1),
-                                      (os.path.join(app.config['UPLOAD_FOLDER'], filename2)),
-                                      os.path.join(app.config['UPLOAD_FOLDER'], filename1), 3,
-                                      os.path.join("static", "loanwithdrawal"))
-            except KeyError:
-                abort(400)
-            img = ""
-            if len(files) == 2:
-                img = files[0] + "%" + files[1]
-            elif len(files) == 1:
-                img = files[0]
-            else:
-                img = "none"
-            try:
-                files2 = compare_jsons(os.path.join(app.config['UPLOAD_FOLDER'], filename1),
-                                       (os.path.join(app.config['UPLOAD_FOLDER'], filename2)), img, 2,
-                                       os.path.join("static", "sharedexclusivejsons"))
-                print(img)
-                print(files2)
-                f = open(f"static/sharedexclusivejsons/{files2}")
-                output = json.dumps(f.read())
-                f.close()
-                print(output)
-            except KeyError:
-                abort(400)
-            # Clear out uploads once we're done with them
-            for i in os.listdir(app.config['UPLOAD_FOLDER']):
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], i))
+@app.route('/output', methods=["GET", "POST"])
+def output():
+    con = sqlite3.connect("jobs.db")
+    method = "ADASD"
 
-            return redirect(url_for('loan_withdrawal', name=img))
-    return render_template("loan_withdrawal_upload.html")
+    def dict_factory(cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
 
-
-@app.route('/loanwithdrawal/<name>', methods=["GET"])
-def loan_withdrawal(name):
-    # Outputs the graph of loans and withdrawals of 2 illutrations, and the
-    # name is the filename(s) of the output
-    f = open(safe_join("static/sharedexclusivejsons", name))
-    json_dict = json.load(f)
-    f.close()
-    # Create the table for the shared and exclusive files.
-    json_output_table = f"<table><tr><th>Policy Scalar</th><th>{json_dict['Scalars']['IllustrationID'][0]}</th><th>{json_dict['Scalars']['IllustrationID'][1]}</th><th>Difference</th></tr>"
-    for key in json_dict["Scalars"].keys():
-        if key == "IllustrationID":
-            continue
-        json_output_table += "<tr>"
-        json_output_table += f"<td>{key}</td>"
-        json_output_table += f"<td>{json_dict['Scalars'][key][0]}</td>"
-        json_output_table += f"<td>{json_dict['Scalars'][key][1]}</td>"
-        json_output_table += f"<td>{json_dict['Differences'][key]}</td>"
-        json_output_table += "</tr>"
-    json_output_table += "</table>"
-    if "%" in name:
-        return render_template("loan_withdrawal_output_2.html", graph1=f"loanwithdrawal/{name[0:name.index('%')]}",
-                               graph2=f"loanwithdrawal/{name[name.index('%') + 1:]}", output=json_output_table)
-    elif name != "none":
-        return render_template("loan_withdrawal_output_1.html", graph=f"loanwithdrawal/{name}",
-                               output=json_output_table)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    if method == "score":
+        job_list = cur.execute("SELECT * FROM jobs ORDER BY score DESC LIMIT 50").fetchall()
+    elif method == "date":
+        job_list = cur.execute("SELECT * FROM jobs ORDER BY date DESC LIMIT 50").fetchall()
     else:
-        return render_template("loan_withdrawal_output_0.html", output=json_output_table)
+        job_list = cur.execute("SELECT *, Date(date) as day FROM jobs ORDER BY day DESC, score DESC LIMIT 150").fetchall()
 
 
-@app.route('/policyvalues', methods=["GET", "POST"])
-def policy_scalars_upload():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            try:
-                img = graph_json(os.path.join(app.config['UPLOAD_FOLDER'], filename), "static/policyvalues",
-                                 request.form["xaxis"])
-            except KeyError:
-                abort(400)
-            # Clear out uploads once we're done with them
-            for i in os.listdir(app.config['UPLOAD_FOLDER']):
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], i))
-            return redirect(url_for('policy_scalars_output', name=img))
-    return render_template("policy_values_upload.html")
+    return render_template("output.html", data=job_list)
 
-
-@app.route('/policyvalues/<name>', methods=["GET"])
-def policy_scalars_output(name):
-    return render_template("policy_values_output.html", graph=f"policyvalues/{name}")
-
-
-@app.route('/epfr', methods=["GET", "POST"])
-def epfr_info_upload():
-    if request.method == 'POST':
-        if len(request.files.getlist("files")) == 0:
-            flash('No file part')
-            return redirect(request.url)
-        files = request.files.getlist("files")
-        allowed = True
-        for i in files:
-            if not allowed_file(i.filename):
-                allowed = False
-                break
-        if allowed:
-            foldername = ""
-            for i in range(len(files)):
-                files[i].filename = secure_filename(files[i].filename)
-                foldername += files[i].filename
-            foldername = str(hash(foldername))
-            temp = os.path.join(app.config["UPLOAD_FOLDER"], foldername)
-            os.mkdir(temp)
-            for i in files:
-                i.save(os.path.join(temp, i.filename))
-            illustrations = os.listdir(temp)
-            epfr_info(illustrations, os.path.join("static", "epfr", f"{foldername}.json"), temp)
-            # Clear out uploads once we're done with them
-            for i in os.listdir(temp):
-                os.remove(f"{temp}/{i}")
-            os.rmdir(temp)
-            return redirect(url_for('epfr_info_output', name=f"{foldername}.json"))
-    return render_template("epfr.html")
-
-
-@app.route('/epfr/<name>', methods=["GET"])
-def epfr_info_output(name):
-    f = open(safe_join("static/epfr", name))
-    json_dict = json.load(f)
-    f.close()
-    # Create the table for the shared and exclusive files.
-    json_output_table = f"<table><tr><th>IllustrationID</th><th>Product Name</th><th>Has EPFR?</th><th>Type</th></tr>"
-    for i in range(len(json_dict["IllustrationID"])):
-        json_output_table += "<tr>"
-        json_output_table += f"<td>{json_dict['IllustrationID'][i]}</td>"
-        json_output_table += f"<td>{json_dict['ProductName'][i]}</td>"
-        json_output_table += f"<td>{json_dict['HasEPFR'][i]}</td>"
-        json_output_table += f"<td>{json_dict['Type'][i]}</td>"
-        json_output_table += "</tr>"
-    json_output_table += "</table>"
-
-    return render_template("epfr_output.html", output=json_output_table)
-"""
 
 
 if __name__ == "__main__":

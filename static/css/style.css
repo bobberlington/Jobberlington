@@ -18029,6 +18029,16 @@ a.badge:hover {
   --bs-light: #303030;
  }
 
+ .blacklist {
+  display: inline-block;
+  vertical-align: top;
+  border-radius: 0.3rem;
+  width: 40rem;
+  height: 2rem;
+  right: 10%;
+  margin-bottom: 20px;
+}
+
 
 /*User CSS*/
 /*# sourceMappingURL=style.css.map */

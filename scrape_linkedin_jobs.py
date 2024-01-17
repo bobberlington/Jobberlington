@@ -71,7 +71,7 @@ Defaults to searching for everything otherwise
 """
 
 
-def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter=None, salary_filter=0, duplicate_job_threshold=3, max_jobs=-1, browser="", location=""):
+def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter=None, salary_filter=0, duplicate_job_threshold=3, max_jobs=0, browser="", location=""):
     if browser == "chrome":
         driver = webdriver.Chrome()
     elif browser == "firefox":
@@ -251,7 +251,6 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
                 logo = job.find_elements(By.XPATH, '//img[contains(@class, "ivm-view-attr__img--centered EntityPhoto-square-4   evi-image lazy-image ember-view")]')[i].get_attribute("src")
             except:
                 logo = "https://i.imgur.com/e60FoKF.png"
-            print(logo)
             job_dict = {
                 'title': title,
                 'company': company,
@@ -268,7 +267,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
             if job_counts[company] > duplicate_job_threshold:
                 continue
             job_postings.append(job_dict)
-            if max_jobs != -1 and len(job_postings) >= max_jobs:
+            if max_jobs > 0 and len(job_postings) >= max_jobs:
                 max_jobs_found = True
                 break
             print(job_dict)
