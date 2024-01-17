@@ -2,16 +2,13 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
-from credentials import email_login, linkedin_password, gmail_password
+from credentials import email_login, linkedin_password
 import imaplib
 import email
-import os
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
 from selenium.common.exceptions import NoSuchElementException
 import pickle
-
+from tkinter import messagebox
+"""
 def get_gmail_credentials():
     SCOPES = ['https://mail.google.com/']
     creds = None
@@ -29,6 +26,7 @@ def get_gmail_credentials():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
+"""
 
 """
 Search through linkedin jobs.
@@ -85,68 +83,32 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
 
     driver.get("https://www.linkedin.com/jobs")
     try:
-        cookies = pickle.load(open("cookies.pkl", "rb"))
+        cookies = pickle.load(open("aacookies.pkl", "rb"))
         for cookie in cookies:
             driver.add_cookie(cookie)
         print("Cookies collected!")
     except FileNotFoundError:
         print("Cookies not found")
     driver.refresh()
-    try:
-        email_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_key")]')
-        email_box.send_keys(email_login)
-        password_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_password")]')
-        password_box.send_keys(linkedin_password)
-        submit_button = driver.find_element(By.XPATH, '//button[contains(@data-id, "sign-in-form__submit-btn")]')
-        submit_button.click()
-        time.sleep(2)
-    except NoSuchElementException:
-        pass
-    try:
-        email_pin = driver.find_element(By.XPATH, '//input[contains(@id, "input__email_verification_pin")]')
-        time.sleep(10)
-        creds = get_gmail_credentials()
-        # Use the access token as the password
-        auth_string = 'user=%s\1auth=Bearer %s\1\1' % (email_login, creds.token)
-
-        mail = imaplib.IMAP4_SSL('imap.gmail.com')
-        mail.authenticate('XOAUTH2', lambda x: auth_string)
-        mail.select('inbox')
-
-        # Search for emails
-        result, data = mail.search(None, 'ALL')
-
-        # Fetch Emails
-        email_ids = data[0].split()
-        email_ids.reverse()
-        count = 0
-        verification = None
-        for e_id in email_ids:
-            if count > 20:
-                break
-            result, email_data = mail.fetch(e_id, '(RFC822)')
-            raw_email = email_data[0][1]
-            # process the email
-            # Example: Parsing the email content
-            message = email.message_from_bytes(raw_email)
-            if message["From"] == "LinkedIn <security-noreply@linkedin.com>" and "Here's your verification code" in message[
-                "Subject"]:
-                verification_string = "Here's your verification code "
-                verification = message["Subject"][len(verification_string):].strip()
-                break
-            count += 1
-            if verification == None:
-                return
-        email_pin.send_keys(verification)
-        pin_submit = driver.find_element(By.XPATH, '//button[contains(@id, "email-pin-submit-button")]')
-        pin_submit.click()
-    except NoSuchElementException:
-        pass
+    if email_login == None or linkedin_password == None:
+        messagebox.showwarning(title="No credentials!", message="No login credentials found in credentials.py! You will have to log in manually. Press OK only after you have logged in.")
+    else:
+        try:
+            email_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_key")]')
+            email_box.send_keys(email_login)
+            password_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_password")]')
+            password_box.send_keys(linkedin_password)
+            submit_button = driver.find_element(By.XPATH, '//button[contains(@data-id, "sign-in-form__submit-btn")]')
+            submit_button.click()
+            time.sleep(2)
+        except NoSuchElementException:
+            pass
     try:
         search_box = driver.find_element(By.XPATH, '//input[contains(@class, "jobs-search-box__text-input")]')
     except NoSuchElementException:
-        print("Something's up here. Maybe a captcha?")
-        input("If there's a captcha, solve it and then press enter in the python console.")
+        if email_login == None or linkedin_password == None:
+            messagebox.showwarning(title="Something went wrong!",
+                                message="I can't find the LinkedIn Search Bar! Is there a captcha? Fill it out if so.")
         search_box = driver.find_element(By.XPATH, '//input[contains(@class, "jobs-search-box__text-input")]')
     search_box.send_keys(search_query)
     search_box.send_keys(Keys.RETURN)
