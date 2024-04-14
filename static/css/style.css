@@ -18039,6 +18039,27 @@ a.badge:hover {
   margin-bottom: 20px;
 }
 
+.summary-table table, td, th{
+  border:1px solid white;
+}
+
+.fake-button {
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: solid 1px #20538D;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+    background: var(--bs-dark);
+    color: #FFF;
+    padding: 8px 12px;
+    text-decoration: none;
+}
+
+.generate-letter {
+  margin-top: 20px;
+  margin-left: 7px;
+}
+
 
 /*User CSS*/
 /*# sourceMappingURL=style.css.map */

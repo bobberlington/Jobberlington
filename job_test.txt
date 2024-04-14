@@ -1,0 +1,7 @@
+{
+  "confidence_rating": 60,
+  "requirements_analysis": "Your resume demonstrates a strong foundation in data science and relevant technical expertise, including Python, SQL, Java, and machine learning. Your experiences in data mining, software development, and IT internship align well with the responsibilities and qualifications outlined in the job description. However, the job emphasizes a preference for candidates with a Ph.D./Master's in Computer Science or related field, which you do not currently hold. While your skills and experiences are impressive, the specific educational requirement may impact the confidence level.",
+  "relevant_field": false,
+  "relevant_skills": true,
+  "years_of_experience": 9999
+}

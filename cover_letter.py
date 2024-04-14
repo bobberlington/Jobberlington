@@ -21,15 +21,7 @@ def write_cover_letter(job_description, resume):
         """
          }
     ])
-
+    print(response.choices[0].message.content)
     return response.choices[0].message.content
 
-con = sqlite3.connect("jobs.db")
-cur = con.cursor()
-cur.execute("""SELECT description FROM jobs WHERE company="ICW Group" """)
-
-
-job_desc = cur.fetchone()
-
-print(write_cover_letter(job_desc, resume))
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark"><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<title>Listed Jobs</title>
+	<title>Generated Cover Letter</title>
 
 	<!-- Meta Tags -->
 	<meta charset="utf-8">
@@ -35,7 +35,7 @@ Header END -->
 		<div class="row g-4">
 
 			<!-- Sidenav START -->
-			<div> <!-- class="col-lg-3" -->
+			<div class="col-lg-3">
 
 				<!-- Navbar START-->
 				<nav class="navbar navbar-expand-lg mx-0">
@@ -49,7 +49,7 @@ Header END -->
 						<div class="offcanvas-body d-block px-2 px-lg-0">
 							<!-- Card START -->
 							<div class="card overflow-hidden">
-									<!-- Card body START -->
+								<!-- Card body START -->
 									<div class="card-body pt-0">
 										<div class="text-center">
 
@@ -60,14 +60,6 @@ Header END -->
 									<div class="text-center">
 										<a href="/">Return to input page</a>
 									</div>
-									<div class="text-center">
-										<a href="/summary?page=1">Summary View</a>
-									</div>
-									{% if single_job == True %}
-									<div class="text-center">
-										<a href="/output">Return to main output</a>
-									</div>
-									{% endif %}
 
 
 
@@ -88,7 +80,6 @@ Header END -->
 			<div class="col-md-8 col-lg-6 vstack gap-4">
 
 
-            {% for job in data %}
                 <!-- Card feed item START -->
                 {% if job['score'] < 70 %}
                     <div class="card score-0">
@@ -120,7 +111,6 @@ Header END -->
 					<!-- Card header END -->
 					<!-- Card body START -->
 					<div class="card-body">
-						<p>{{job["description_html"] | safe}}</p>
 
 						<!-- Card img -->
 						<img class="card-img" src="" alt="">
@@ -151,10 +141,23 @@ Header END -->
                                     <div class="ms-2">
                                         <div class="bg-light p-3 rounded">
                                             <div class="d-flex justify-content-between">
-
-                                                <h6 class="mb-1">  Resume Analysis </h6>
+                                                <h6 class="mb-1">  Cover Letter </h6>
                                             </div>
-                                            <p class="small mb-0">{{job["analysis"]}}</p>
+                                            <p class="small mb-0">{{cover_letter}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+							<li class="comment-item" style="list-style: none;">
+                                <div class="d-flex">
+                                    <!-- Comment by -->
+
+                                    <div class="ms-2">
+                                        <div class="bg-light p-3 rounded">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-1">  Resume Objective </h6>
+                                            </div>
+                                            <p class="small mb-0">{{objective}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -166,37 +169,6 @@ Header END -->
 
 						</ul>
 						<!-- Comment wrap END -->
-						<div class="generate-letter">
-							<a href="" class="fake-button" id="test-{{job['id']}}">Test</a>
-
-
-							<a href="/generate_letter?id={{job['id']}}" class="fake-button" id="generate-resume-{{job['id']}}">Generate Cover Letter/Resume Objective</a>
-
-							<script>
-
-								document.getElementById('generate-resume-{{job["id"]}}').onclick = change_text;
-
-								function change_text() {
-									setInterval(function() {
-
-										var texts = ['Generating.', 'Generating..', 'Generating...'];
-										if (document.getElementById('generate-resume-{{job["id"]}}').innerHTML == texts[0]) {
-											document.getElementById('generate-resume-{{job["id"]}}').innerHTML = texts[1];
-										}
-										else
-										if (document.getElementById('generate-resume-{{job["id"]}}').innerHTML == texts[1]) {
-											document.getElementById('generate-resume-{{job["id"]}}').innerHTML = texts[2];
-										}
-										else {
-											document.getElementById('generate-resume-{{job["id"]}}').innerHTML = texts[0];
-										}
-										if (index == texts.length) {
-											index = 0;
-										}
-									}, 700);
-								}
-							</script>
-						</div>
 					</div>
 					<!-- Card body END -->
 					<!-- Card footer START -->
@@ -207,7 +179,6 @@ Header END -->
 				</div>
 				<!-- Card feed item END -->
 
-            {% endfor %}
 
 
 			</div>

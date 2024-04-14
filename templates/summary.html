@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Job Summary</title>
+
+	<!-- Meta Tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="https://i.imgur.com/e60FoKF.png">
+
+	<!-- Google Font -->
+	<link rel="preconnect" href="https://fonts.googleapis.com/">
+	<link rel="stylesheet" href="static/css/css2.css">
+
+
+	<!-- Theme CSS -->
+	<link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+	 <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<style></style><style></style></head>
+
+<!-- =======================
+Header START -->
+<!-- =======================
+Header END -->
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+	<!-- Container START -->
+	<div class="container">
+		<div class="row g-4">
+
+			<!-- Sidenav START -->
+			<div class="">
+
+				<!-- Navbar START-->
+				<nav class="navbar navbar-expand-lg mx-0">
+					<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSideNavbar">
+
+						<!-- Offcanvas body -->
+						<div class="offcanvas-body d-block px-2 px-lg-0">
+							<!-- Card START -->
+							<div class="card overflow-hidden">
+									<!-- Card body START -->
+									<div class="card-body pt-0">
+										<div class="text-center">
+
+										</div>
+
+									<!-- Divider -->
+									<hr>
+									<div class="text-center">
+										<a href="/">Return to input page</a>
+									</div>
+									<div class="text-center">
+										<a href="/output">Go to main output</a>
+									</div>
+									<hr>
+									<div class="text-center">
+										<b>Page</b>
+									</div>
+
+									<div class="text-center">
+									{% if page > 1 %}
+									<a href="/summary?page={{1}}">«  </a>
+									{% endif %}
+									{% if page > 1 %}
+									<a href="/summary?page={{page - 1}}"><&nbsp;&nbsp;&nbsp;</a>
+									{% endif %}
+									{% if page > 3 %}
+									<a href="/summary?page={{page - 3}}">{{page - 3}}</a>
+									{% endif %}
+									{% if page > 2 %}
+									<a href="/summary?page={{page - 2}}">{{page - 2}}</a>
+									{% endif %}
+									{% if page > 1 %}
+									<a href="/summary?page={{page - 1}}">{{page - 1}}</a>
+									{% endif %}
+									<b>{{page}}</b>
+									{% if page < num_pages %}
+									<a href="/summary?page={{page + 1}}">{{page + 1}}</a>
+									{% endif %}
+									{% if page + 1 < num_pages %}
+									<a href="/summary?page={{page + 2}}">{{page + 2}}</a>
+									{% endif %}
+									{% if page + 2 < num_pages %}
+									<a href="/summary?page={{page + 3}}">{{page + 3}}</a>
+									{% endif %}
+									{% if page < num_pages %}
+									<a href="/summary?page={{page + 1}}">&nbsp;&nbsp;&nbsp;></a>
+									{% endif %}
+									{% if page < num_pages %}
+									<a href="/summary?page={{num_pages}}">»</a>
+									{% endif %}
+
+
+
+								</div>
+								<!-- Card body END -->
+								<!-- Card footer -->
+							</div>
+							<!-- Card END -->
+
+						</div>
+					</div>
+				</nav>
+				<!-- Navbar END-->
+			</div>
+			<!-- Sidenav END -->
+
+			<!-- Main content START -->
+			<div class="col-md-8 col-lg-6 vstack gap-4">
+			<table class="summary_table">
+			<tr>
+				<th>Date</th>
+				<th>Score</th>
+				<th>Company</th>
+				<th>Title</th>
+				<th>Details</th>
+			</tr>
+            {% for job in data %}
+			<tr>
+				<td>{{job["day"]}}</td>
+				<td>{{job["score"]}}</td>
+				<td><a href="/output?id={{job['id']}}">{{job["company"]}}</a></td>
+				<td>{{job["title"]}}</td>
+				<td>{{job["details"]}}</td>
+			</tr>
+
+            {% endfor %}
+
+			</table>
+
+
+			</div>
+
+			<!-- Main content END -->
+
+
+
+		</div> <!-- Row END -->
+	</div>
+	<!-- Container END -->
+		</div>
+	</div>
+
+</main>
+<!-- **************** MAIN CONTENT END **************** -->
+
+
+		</div>
+	</div>
+</div>
+<!-- Modal create feed END -->
+
+
+
+
+</body></html>

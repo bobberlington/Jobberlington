@@ -83,7 +83,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
 
     driver.get("https://www.linkedin.com/jobs")
     try:
-        cookies = pickle.load(open("aacookies.pkl", "rb"))
+        cookies = pickle.load(open("cookies.pkl", "rb"))
         for cookie in cookies:
             driver.add_cookie(cookie)
         print("Cookies collected!")
@@ -92,6 +92,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
     driver.refresh()
     if email_login == None or linkedin_password == None:
         messagebox.showwarning(title="No credentials!", message="No login credentials found in credentials.py! You will have to log in manually. Press OK only after you have logged in.")
+        time.sleep(1)
     else:
         try:
             email_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_key")]')
@@ -106,9 +107,9 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
     try:
         search_box = driver.find_element(By.XPATH, '//input[contains(@class, "jobs-search-box__text-input")]')
     except NoSuchElementException:
-        if email_login == None or linkedin_password == None:
-            messagebox.showwarning(title="Something went wrong!",
-                                message="I can't find the LinkedIn Search Bar! Is there a captcha? Fill it out if so.")
+        messagebox.showwarning(title="Something went wrong!",
+                            message="I can't find the LinkedIn Search Bar! Is there a captcha? Fill it out if so.")
+        time.sleep(1)
         search_box = driver.find_element(By.XPATH, '//input[contains(@class, "jobs-search-box__text-input")]')
     search_box.send_keys(search_query)
     search_box.send_keys(Keys.RETURN)
@@ -188,17 +189,28 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
             job.click()
             time.sleep(0.75)
             try:
-                job_card = driver.find_element(By.XPATH, '//div[contains(@class, "job-details-jobs-unified-top-card__content--two-pane")]')
+                job_card = driver.find_element(By.XPATH, '//div[contains(@class, "jobs-search__job-details--container")]')
             except NoSuchElementException:
+                print("Can't find the job card")
                 continue
+            # Skip "no longer accepting applications"
             try:
+                no_applications = driver.find_element(By.XPATH, '//span[contains(@class, "artdeco-inline-feedback__message")]').text
+                if no_applications == "No longer accepting applications":
+                    continue
+            except NoSuchElementException:
+                print("This job isn't taking applications")
+                pass
+
+            try:
+
                 description = job_card.find_element(By.XPATH, '//div[contains(@id, "job-details")]').text
                 description_full = job_card.find_element(By.XPATH, '//div[contains(@id, "job-details")]').get_attribute("innerHTML")
             except NoSuchElementException:
                 description = "N/A"
                 description_full = "N/A"
             try:
-                title = job_card.find_element(By.XPATH, './/span[contains(@class, "job-details-jobs-unified-top-card__job-title-link")]').text
+                title = job_card.find_element(By.XPATH, '//h2[contains(@class, "t-24 t-bold job-details-jobs-unified-top-card__job-title")]').text
             except NoSuchElementException:
                 title = "N/A"
             try:
@@ -232,6 +244,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
             if max_jobs > 0 and len(job_postings) >= max_jobs:
                 max_jobs_found = True
                 break
+            print("The Job:")
             print(job_dict)
 
         # Find and click the next page button
@@ -250,5 +263,5 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
     return job_postings
 
 if __name__ == "__main__":
-    scrape_linkedin_jobs("Software Engineer", 5, date_filter=1, experience_filter=[1, 2, 3], salary_filter=3)
+    scrape_linkedin_jobs("Software Engineer", 5, date_filter=1, experience_filter=[1, 2, 3], salary_filter=3, max_jobs=2)
 

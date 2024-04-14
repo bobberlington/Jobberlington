@@ -6,7 +6,7 @@
 	<!-- Meta Tags -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="Bootstrap 5 based Social Media Network and Community Theme">
+	<meta name="description" content="">
 	<!-- Favicon -->
 	<link rel="shortcut icon" href="https://i.imgur.com/e60FoKF.png">
 
@@ -60,7 +60,8 @@
 								<input type="text" placeholder="Job Location" class="search-query" name="job-location">
 							</div>
 							<div class="my-wrapper-text">
-								<textarea placeholder="Input Resume" class="resume" name="resume"></textarea>
+								<textarea placeholder="Input Resume (This will be saved for generation of cover letters/objective statements)
+" class="resume" name="resume"></textarea>
 							</div>
 							<div>
 									<div>
@@ -77,9 +78,9 @@
 								</div>
 								<div>
 									<div class="input-label">
-										<p><b>Ignore jobs duplicated in the database</b></p>
+										<b>How many years of experience do you have?</b>
 									</div>
-									<input type="checkbox" id="dupe-jobs" name="dupe-jobs" value="1">
+									<input type="number" id="years" name="years" min="0" max="1000" value="0">
 								</div>
 								<div class="pages">
 									<div class="input-label">
@@ -145,6 +146,30 @@
 									</div>
 								</div>
 								<input type="submit" id="Submit" value="Search Jobs" class="submit-button">
+								<script>
+
+								document.getElementById('Submit').onclick = change_text;
+
+								function change_text() {
+									setInterval(function() {
+
+										var texts = ['Searching.', 'Searching..', 'Searching...'];
+										if (document.getElementById('Submit').value == texts[0]) {
+											document.getElementById('Submit').value = texts[1];
+										}
+										else
+										if (document.getElementById('Submit').value == texts[1]) {
+											document.getElementById('Submit').value = texts[2];
+										}
+										else {
+											document.getElementById('Submit').value = texts[0];
+										}
+										if (index == texts.length) {
+											index = 0;
+										}
+									}, 700);
+								}
+							</script>
 								<a href="/output"> View analyzed jobs</a>
 							</div>
 						</form>
