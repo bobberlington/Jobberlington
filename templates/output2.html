@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jobberlington — Results</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href= "{{ url_for('static',filename='styles/style.css') }}" />
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/"><span>Job</span>Sift</a>
+  <nav>
+    <a href="/">Search</a>
+    <a href="/output" class="active">Results</a>
+    <a href="#">Saved</a>
+  </nav>
+</header>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1>Your <em>Results.</em></h1>
+    <p style="color:var(--muted);font-size:0.9rem;margin-top:0.6rem;">Ranked by resume match · Product Manager · San Francisco, CA</p>
+  </div>
+  <div class="result-meta">
+    <strong>24</strong>
+    jobs found across 5 pages
+  </div>
+</div>
+
+<!-- Toolbar
+<div class="toolbar">
+  <span class="toolbar-label">Filter</span>
+  <button class="filter-chip active">All</button>
+  <button class="filter-chip">High Match</button>
+  <button class="filter-chip">Last 24h</button>
+  <button class="filter-chip">$100k+</button>
+  <button class="filter-chip">Remote</button>
+  <div class="spacer"></div>
+  <a class="back-btn" href="/">New Search</a>
+</div>
+-->
+
+<!-- Results — grouped by scrape date -->
+
+<!-- ── April 3, 2026 ── -->
+<div class="day-section">
+  <div class="day-divider">
+    <div class="day-divider-label">
+      <span class="day-divider-date">Today — April 3, 2026</span>
+      <span class="day-divider-count">2 jobs</span>
+    </div>
+    <div class="day-divider-line"></div>
+  </div>
+  <div class="day-grid">
+
+    <!-- Card 1 -->
+    {% for job in data %}
+    <div class="job-card featured">
+      <div class="card-top">
+        <div class="company-logo"><a href="#!"> <img class="avatar-img" src="{{job['logo']}}"  width=200px alt=""> </a></div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          {% if job['score'] < 70 %}
+                  <span class="confidence-score low">{{job["confidence_value"]}}</span>
+                  <div class="confidence-bar"><div class="confidence-fill low" style="width:{{job['confidence_value']}}%"></div></div>
+                {% elif job['score'] >= 70 and job['score'] <= 80 %}
+                  <span class="confidence-score mid">{{job["confidence_value"]}}</span>
+                  <div class="confidence-bar"><div class="confidence-fill mid" style="width:{{job['confidence_value']}}%"></div></div>
+                {% else %}
+                  <span class="confidence-score high">{{job["confidence_value"]}}</span>
+                  <div class="confidence-bar"><div class="confidence-fill high" style="width:{{job['confidence_value']}}%"></div></div>
+                {% endif %}
+        </div>
+      </div>
+      <div>
+        <div class="card-company"><a href="{{job['url']}}">{{job['company']}}</a><</div>
+        <div class="card-title">{{job['title']}}</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag">{{job["details"]}}</span>
+      </div>
+      <p class="card-description">{{job["description_html"] | safe}}</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Grabbed on {{job["date"]}}</span>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Card 2 -->
+    <div class="job-card featured">
+      <div class="card-top">
+        <div class="company-logo">🔴</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score high">91%</span>
+          <div class="confidence-bar"><div class="confidence-fill high" style="width:91%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Figma</div>
+        <div class="card-title">Product Manager, Collaboration & Multiplayer</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag accent-tag">Hybrid</span>
+        <span class="tag">$140k–$170k</span>
+        <span class="tag">Mid-Senior</span>
+      </div>
+      <p class="card-description">Own the product surface for real-time collaboration in Figma — one of the most beloved features in the product. You'll define the roadmap, run discovery, and ship improvements that affect millions of design teams worldwide.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 8 hours ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── April 2, 2026 ── -->
+<div class="day-section">
+  <div class="day-divider">
+    <div class="day-divider-label">
+      <span class="day-divider-date">Yesterday — April 2, 2026</span>
+      <span class="day-divider-count">2 jobs</span>
+    </div>
+    <div class="day-divider-line"></div>
+  </div>
+  <div class="day-grid">
+
+    <!-- Card 3 -->
+    <div class="job-card">
+      <div class="card-top">
+        <div class="company-logo">🟩</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score high">87%</span>
+          <div class="confidence-bar"><div class="confidence-fill high" style="width:87%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Notion</div>
+        <div class="card-title">Product Manager, AI Features</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag accent-tag">Remote</span>
+        <span class="tag">$120k–$155k</span>
+        <span class="tag">Mid-Senior</span>
+      </div>
+      <p class="card-description">Lead product development for Notion's growing suite of AI-powered features. You'll partner with research, data science, and design to identify opportunities and deliver intelligent writing and organization tools to millions of users.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 1 day ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="job-card">
+      <div class="card-top">
+        <div class="company-logo">🔷</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score mid">74%</span>
+          <div class="confidence-bar"><div class="confidence-fill mid" style="width:74%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Linear</div>
+        <div class="card-title">Product Manager, Core Workflows</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag accent-tag">Remote</span>
+        <span class="tag">$110k–$145k</span>
+        <span class="tag">Mid-Senior</span>
+      </div>
+      <p class="card-description">Shape the future of how engineering teams plan, track, and ship work. You'll work on the core issue tracking and project management surfaces, deeply understanding the workflows of developers and PMs to build a faster, more intuitive product.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 2 days ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── April 1, 2026 ── -->
+<div class="day-section">
+  <div class="day-divider">
+    <div class="day-divider-label">
+      <span class="day-divider-date">April 1, 2026</span>
+      <span class="day-divider-count">2 jobs</span>
+    </div>
+    <div class="day-divider-line"></div>
+  </div>
+  <div class="day-grid">
+
+    <!-- Card 5 -->
+    <div class="job-card">
+      <div class="card-top">
+        <div class="company-logo">🟠</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score mid">68%</span>
+          <div class="confidence-bar"><div class="confidence-fill mid" style="width:68%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Cloudflare</div>
+        <div class="card-title">Product Manager, Workers Platform</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag">On-site · SF</span>
+        <span class="tag">$125k–$160k</span>
+        <span class="tag">Senior</span>
+      </div>
+      <p class="card-description">Define the roadmap for Cloudflare Workers, the company's serverless compute platform. Work with engineering teams to translate developer needs into product features, own go-to-market strategy, and drive adoption among enterprise customers.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 3 days ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="job-card">
+      <div class="card-top">
+        <div class="company-logo">⚫</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score mid">61%</span>
+          <div class="confidence-bar"><div class="confidence-fill mid" style="width:61%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Vercel</div>
+        <div class="card-title">Product Manager, Frontend Cloud</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag accent-tag">Remote</span>
+        <span class="tag">$115k–$150k</span>
+        <span class="tag">Mid-Senior</span>
+      </div>
+      <p class="card-description">Help define the direction of Vercel's Frontend Cloud platform. You'll collaborate across engineering, marketing, and sales to deliver features that reduce deployment friction for developers and improve the performance of web applications globally.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 4 days ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── March 27, 2026 ── -->
+<div class="day-section" style="margin-bottom: 5rem;">
+  <div class="day-divider">
+    <div class="day-divider-label">
+      <span class="day-divider-date">March 27, 2026</span>
+      <span class="day-divider-count">2 jobs</span>
+    </div>
+    <div class="day-divider-line"></div>
+  </div>
+  <div class="day-grid">
+
+    <!-- Card 7 -->
+    <div class="job-card">
+      <div class="card-top">
+        <div class="company-logo">🟣</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score low">48%</span>
+          <div class="confidence-bar"><div class="confidence-fill low" style="width:48%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Twilio</div>
+        <div class="card-title">Associate Product Manager, Messaging</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag">On-site · SF</span>
+        <span class="tag">$85k–$110k</span>
+        <span class="tag">Associate</span>
+      </div>
+      <p class="card-description">Support the product team on Twilio's messaging APIs and programmable communications platform. Assist with roadmap planning, write PRDs, coordinate with engineering on delivery, and analyze usage data to surface insights for the team.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 1 week ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+    <!-- Card 8 -->
+    <div class="job-card">
+      <div class="card-top">
+        <div class="company-logo">🔵</div>
+        <div class="confidence">
+          <span class="confidence-label">Match</span>
+          <span class="confidence-score low">42%</span>
+          <div class="confidence-bar"><div class="confidence-fill low" style="width:42%"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-company">Salesforce</div>
+        <div class="card-title">Product Manager, CRM Analytics</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag">Hybrid · SF</span>
+        <span class="tag">$120k–$155k</span>
+        <span class="tag">Mid-Senior</span>
+      </div>
+      <p class="card-description">Drive the strategy and execution for CRM Analytics within Salesforce's core platform. Collaborate with enterprise customers to understand reporting needs, define product vision, and work across a large cross-functional org to ship high-impact analytics features.</p>
+      <div class="card-footer">
+        <span class="card-timestamp">Posted 1 week ago</span>
+        <a class="apply-btn" href="#">Apply</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Filter chip toggle
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

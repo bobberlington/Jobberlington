@@ -5,7 +5,8 @@ import time
 from credentials import email_login, linkedin_password
 import imaplib
 import email
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, StaleElementReferenceException
+from selenium.webdriver.common.action_chains import ActionChains
 import pickle
 from tkinter import messagebox
 """
@@ -83,15 +84,17 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
 
     driver.get("https://www.linkedin.com/jobs")
     try:
-        cookies = pickle.load(open("cookies.pkl", "rb"))
-        for cookie in cookies:
-            driver.add_cookie(cookie)
+        # cookies = pickle.load(open("cookies_linkedin.pkl", "rb"))
+        # for cookie in cookies:
+        #     driver.add_cookie(cookie)
         print("Cookies collected!")
     except FileNotFoundError:
         print("Cookies not found")
+    time.sleep(2)
     driver.refresh()
     if email_login == None or linkedin_password == None:
-        messagebox.showwarning(title="No credentials!", message="No login credentials found in credentials.py! You will have to log in manually. Press OK only after you have logged in.")
+        print("No credentials!")
+        # messagebox.showwarning(title="No credentials!", message="No login credentials found in credentials.py! You will have to log in manually. Press OK only after you have logged in.")
         time.sleep(1)
     else:
         try:
@@ -105,71 +108,98 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
         except NoSuchElementException:
             pass
     try:
-        search_box = driver.find_element(By.XPATH, '//input[contains(@class, "jobs-search-box__text-input")]')
+        search_box = driver.find_element(By.XPATH, '//input[contains(@placeholder, "Title, skill or Company")]')
     except NoSuchElementException:
-        messagebox.showwarning(title="Something went wrong!",
-                            message="I can't find the LinkedIn Search Bar! Is there a captcha? Fill it out if so.")
+        print("Can't find the search bar!")
+        # messagebox.showwarning(title="Something went wrong!",
+        #                   message="I can't find the LinkedIn Search Bar! Is there a captcha? Fill it out if so, then click OK.")
         time.sleep(1)
-        search_box = driver.find_element(By.XPATH, '//input[contains(@class, "jobs-search-box__text-input")]')
+        search_box = driver.find_element(By.XPATH, '//input[contains(@placeholder, "Title, skill or Company")]')
     search_box.send_keys(search_query)
     search_box.send_keys(Keys.RETURN)
-
-    time.sleep(3)  # Wait for results to load
-
+    time.sleep(10)  # Wait for results to load
+    print("ADJSIFJSDF")
     job_postings = []
     job_counts = {}
 
     if location != "":
-        location_bar = driver.find_element(By.XPATH, '//input[contains(@id, "jobs-search-box-location-id-ember")]')
-        location_bar.click()
-        location_bar.clear()
-        location_bar.send_keys(location)
-        location_bar.send_keys(Keys.RETURN)
-        location_bar.send_keys(Keys.RETURN)
-        time.sleep(3)
+        try:
+            location_bar = driver.find_element(By.XPATH, '//input[contains(@id, "jobs-search-box-location-id-ember")]')
+            location_bar.click()
+            location_bar.clear()
+            location_bar.send_keys(location)
+            location_bar.send_keys(Keys.RETURN)
+            location_bar.send_keys(Keys.RETURN)
+            time.sleep(3)
+        except NoSuchElementException:
+            pass
 
     if date_filter in [1, 2, 3]:
-        date_filter_button = driver.find_element(By.XPATH, '//button[contains(@id, "searchFilter_timePostedRange")]')
-        date_filter_button.click()
-        time.sleep(1)
-        if date_filter == 1:
-            past_month = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r2592000")]')
-            past_month.click()
-        elif date_filter == 2:
-            past_week = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r604800")]')
-            past_week.click()
-        elif date_filter == 3:
-            past_day = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r86400")]')
-            past_day.click()
-        time.sleep(0.5)
-        date_filter_button.click()
-        time.sleep(4)
+        try:
+            date_filter_button = driver.find_element(By.XPATH,'//button[contains(@id, "searchFilter_timePostedRange")]')
+            date_filter_button.click()
+            time.sleep(1)
+            if date_filter == 1:
+                past_month = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r2592000")]')
+                past_month.click()
+            elif date_filter == 2:
+                past_week = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r604800")]')
+                past_week.click()
+            elif date_filter == 3:
+                past_day = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r86400")]')
+                past_day.click()
+            date_filter_confirm_list = driver.find_elements(By.XPATH,'//button[contains(@class, "artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml2")]')
+            for button in date_filter_confirm_list:
+                try:
+                    button.click()
+                except (ElementNotInteractableException, StaleElementReferenceException) as e:
+                    print(e)
+            time.sleep(4)
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            print(e)
 
     if experience_filter is not None:
-        experience_filter_button = driver.find_element(By.XPATH, '//button[contains(@id, "searchFilter_experience")]')
-        experience_filter_button.click()
-        for key in experience_filter:
-            try:
-                time.sleep(0.5)
-                filter = driver.find_element(By.XPATH, f'//label[contains(@for, "experience-{key}")]')
-                filter.click()
-            except NoSuchElementException:
-                print(f"Picked invalid experience level: {key}")
-                continue
-        experience_filter_button.click()
-        time.sleep(4)
+        try:
+            experience_filter_button = driver.find_element(By.XPATH,'//button[contains(@id, "searchFilter_experience")]')
+            experience_filter_button.click()
+            for key in experience_filter:
+                try:
+                    time.sleep(0.5)
+                    filter = driver.find_element(By.XPATH, f'//label[contains(@for, "experience-{key}")]')
+                    filter.click()
+                except NoSuchElementException:
+                    print(f"Picked invalid experience level: {key}")
+                    continue
+            experience_filter_confirm_list = driver.find_elements(By.XPATH, '//button[contains(@class, "artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml2")]')
+            for button in experience_filter_confirm_list:
+                try:
+                    button.click()
+                except (ElementNotInteractableException, StaleElementReferenceException) as e:
+                    print(e)
+            time.sleep(4)
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            print(e)
 
     if salary_filter in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-        salary_filter_button = driver.find_element(By.XPATH, '//button[contains(@id, "searchFilter_salaryBucketV2")]')
-        salary_filter_button.click()
-        time.sleep(0.5)
         try:
-            filter = driver.find_element(By.XPATH, f'//label[contains(@for, "salaryBucketV2-{salary_filter}")]')
-            filter.click()
-        except NoSuchElementException:
-            print(f"Invalid salary value: {salary_filter}")
-        salary_filter_button.click()
-        time.sleep(4)
+            salary_filter_button = driver.find_element(By.XPATH,
+                                                       '//button[contains(@id, "searchFilter_salaryBucketV2")]')
+            salary_filter_button.click()
+            time.sleep(0.5)
+            try:
+                filter = driver.find_element(By.XPATH, f'//label[contains(@for, "salaryBucketV2-{salary_filter}")]')
+                filter.click()
+            except NoSuchElementException:
+                print(f"Invalid salary value: {salary_filter}")
+            salary_filter_confirm_list = driver.find_elements(By.XPATH,'//button[contains(@class, "artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml2")]')
+            for button in salary_filter_confirm_list:
+                try:
+                    button.click()
+                except (ElementNotInteractableException, StaleElementReferenceException) as e:
+                    print(e)
+            time.sleep(4)
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            print(e)
 
     # Loop through all job filters
     max_jobs_found = False
@@ -177,6 +207,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
         jobs = driver.find_elements(By.XPATH, '//div[contains(@class, "job-card-container--clickable")]')
 
         for i in range(0, 50):
+            time.sleep(3)
             try:
                 job = jobs[i]
             except IndexError:
@@ -197,9 +228,9 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
             try:
                 no_applications = driver.find_element(By.XPATH, '//span[contains(@class, "artdeco-inline-feedback__message")]').text
                 if no_applications == "No longer accepting applications":
+                    print("This job isn't taking applications")
                     continue
             except NoSuchElementException:
-                print("This job isn't taking applications")
                 pass
 
             try:
@@ -210,11 +241,11 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
                 description = "N/A"
                 description_full = "N/A"
             try:
-                title = job_card.find_element(By.XPATH, '//h2[contains(@class, "t-24 t-bold job-details-jobs-unified-top-card__job-title")]').text
+                title = job_card.find_element(By.XPATH, '//div[contains(@class, "t-24 job-details-jobs-unified-top-card__job-title")]/h1[contains(@class, "t-24 t-bold inline")]/a').text
             except NoSuchElementException:
                 title = "N/A"
             try:
-                company = job_card.find_element(By.XPATH, './/a[contains(@class, "app-aware-link ")]').text
+                company = job_card.find_element(By.XPATH, './/div[contains(@class, "job-details-jobs-unified-top-card__company-name")]/a').text
             except NoSuchElementException:
                 company = "N/A"
             try:
@@ -248,6 +279,7 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
             print(job_dict)
 
         # Find and click the next page button
+
         if max_jobs_found:
             break
         try:
@@ -258,10 +290,10 @@ def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter
         except Exception as e:
             print("Reached the end of pages or encountered an error:", e)
             break
-    pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
+    pickle.dump(driver.get_cookies(), open("cookies_linkedin.pkl", "wb"))
     driver.quit()
     return job_postings
 
 if __name__ == "__main__":
-    scrape_linkedin_jobs("Software Engineer", 5, date_filter=1, experience_filter=[1, 2, 3], salary_filter=3, max_jobs=2)
+    scrape_linkedin_jobs("Software Engineer", 5, date_filter=1, experience_filter=[1, 2, 3], salary_filter=3, max_jobs=4)
 

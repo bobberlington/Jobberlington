@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 *.DS_STORE
+Sample Resume/*
 database_stuff.py
 export_jobs.py
 generate_htmltest.py
@@ -14,7 +15,7 @@ credentials.json
 credentials.py
 token.json
 jobs/*
-cookies.pkl
+cookies_linkedin.pkl
 .idea*
 sample_html_card.html
 sample_html_head.html

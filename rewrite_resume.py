@@ -1,7 +1,7 @@
 from openai import OpenAI
 from credentials import chatgpt_api, resume
 
-client = OpenAI(api_key=chatgpt_api)
+# client = OpenAI(api_key=chatgpt_api)
 
 
 def rewrite_resume(job_description, resume):

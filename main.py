@@ -2,7 +2,7 @@ from scrape_linkedin_jobs import scrape_linkedin_jobs
 from evaluate_jobs import analyze_job_fit
 import json
 from json.decoder import JSONDecodeError
-from credentials import resume
+from credentials import RESUME as resume
 from config import search_query, linkedin_salary, linkedin_experience, linkedin_pages, linkedin_date, duplicate_job_threshold, max_jobs, job_location
 from generate_htmltest import create_job_html
 import sqlite3
@@ -23,6 +23,7 @@ cur = con.cursor()
 db_insert = []
 
 for job in jobs:
+
     check_dupes = cur.execute("SELECT * FROM JOBS WHERE (title = ? AND company = ?)", (job["title"], job["company"])).fetchall()
     if check_dupes is not None and len(check_dupes) > duplicate_job_threshold:
         continue

@@ -24,6 +24,7 @@ def create_job_html(job_list):
     con.row_factory = dict_factory
     cur = con.cursor()
     job_list = cur.execute("SELECT * FROM jobs ORDER BY score DESC LIMIT 50").fetchall()
+    job_counts = cur.execute("SELECT * FROM jobs ORDER BY score DESC LIMIT 50").fetchall()
 
     for job in job_list:
         if job["score"] >= 0 and job["score"] <= 70:

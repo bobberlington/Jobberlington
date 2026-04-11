@@ -4,12 +4,13 @@ import credentials
 from credentials import chatgpt_api, resume
 
 
+
 client = OpenAI(api_key=chatgpt_api)
 
 
-def analyze_job_fit(job_description, resume, years=0, blacklist=[]):
+def analyze_job_fit(job_title, job_description, resume, years=0, blacklist=[]):
 
-    response = client.chat.completions.create(model="gpt-3.5-turbo-1106",  response_format={"type": "json_object"}, # Replace with the correct model name
+    response = client.chat.completions.create(model="gpt-5-mini",  response_format={"type": "json_object"}, # Replace with the correct model name
     messages=[
         {"role" : "system", "content" : f"""
         You are a personal job recruiter, specializing in finding and matching individuals with their ideal job opportunities. 
@@ -19,46 +20,109 @@ def analyze_job_fit(job_description, resume, years=0, blacklist=[]):
         """},
 
         {"role": "user", "content": f"""
-        You are helping me to review the prospect of a job posting. Here my resume: {resume}
+   You are helping me to review the prospect of a job posting. Here my resume: 
+    
+        <my_resume>
+            {resume}
+        </my_resume>
         
-        --------
-        THIS IS THE JOB DESCRIPTION: 
-        {job_description}
+        
+        The job title is this:
 
-        -------- 
-        
-        Based on your experience as an expert job recruiter, review the job description in the posting and compare them to my work experience and technical skills and provide feedback. Your assessments should come from the hiring manager’s perspective, the answers should be objective, stringent, and do not make assumptions on my potential when the job requirements & experience levels do not match my existing experience verbatim.  Give your answers in JSON format, in which contains 4 fields and the questions are  described below:
+        <job_title>
+            {job_title}
+        </job_title>
+        and the job description is:
+        <job_description>
+            {job_description}
+        </job_description>
 
-        {{
-        confidence_rating: "YOUR ANSWER HERE",  // a ENUM value
-        requirements_analysis: "",
-        relevant_field: "",
-        years_of_experience: "",
-        has_degree: [],
-        }}
-                
-        Here are the meanings of each field: 
+        <job_score_requirements>
         
-        confidence_rating : This is a ENUM field with 3 possible values:  HIGH, MEDIUM, LOW. Which indicates, from the hiring manager’s perspective, how attractive my profile is based on the requirements.
-        
-        Things to consider when providing the rating:
-        1. How closely the job description matches the skills or experiences that my resume contains
-        2. The more skills required in the job posting that I DO NOT HAVE in the resume, the less relevant and attractive my profile is to the hiring manager.
+            Based on your experience as an expert job recruiter, review the job description in the posting and compare them to my work experience and technical skills and provide feedback. Your assessments should come from the hiring manager’s perspective, but also reflect how recruiters realistically weigh transferable skills and related experience. The answers should be objective and evidence-based, but do not automatically penalize small gaps if the resume shows strong alignment overall. Give your answers in JSON format, which contains 3 fields described below:    
+            {{
+            confidence_rating: "YOUR ANSWER HERE",  // a ENUM value
+            requirements_analysis: "",
+            relevant_field: "",
+            }}
+                    
+            Here are the meanings of each field: 
             
-        2. The next field is requirements_analysis, a string value that holds your analysis of the requirements compared to my resume, acting as a reasoning for your confidence_rating.
-        """
-         },
-        {"role": "user", "content": f"""
-        3. The next field is relevant_field, which is a string. Search for the academic degree that the job asks for. Then search for the degree in my resume. If they are in unrelated fields, label “different”. If the job’s degree is a higher degree than mine (for example, if the job asks for a Master’s or PHD while my resume has a Bachelor’s), label as “different”. If the job asks for a degree that is the same as my resume, label it as “same”. If the job description asks for a degree that is in a field closely related to the one in my resume, label as “similar”.  If you cannot find the degree level, label as "none". If you cannot find the major that the degree is in, label as "none".
- """
-         },
-        {"role": "user", "content": f"""
-        4. The next field is years_of_experience, an integer which measures whether I have the years of experience to match the job. Find the number of years of experience the job takes. If the number is not listed in the job description, set the value to -1.
-    """
-         },
-       {"role": "user", "content": f"""
-        5. The next field is has_degree, a boolean evaluating what parts of the job description are missing.
-    """
+            <confidence_rating_explanation>
+                confidence_rating : 
+                This is a ENUM field with 3 possible values:  HIGH, MEDIUM, LOW. 
+                    This is a ENUM field with 3 possible values: HIGH, MEDIUM, LOW. 
+                    Which indicates, from the hiring manager’s perspective, how attractive my profile is based on the requirements.
+                    When evaluating this, give the most weight to degree requirements, work experience level, and domain-specific expertise. Secondary requirements (such as tools, frameworks, or soft skills) should not outweigh strong alignment with the core requirements.                
+                    
+                     
+                Ratings should follow these rules:
+                - HIGH: Resume matches most or all critical requirements (degree, experience level, domain-specific skills). Minor gaps in secondary requirements do not prevent a HIGH rating if transferable skills or closely related experience are demonstrated.
+                - MEDIUM: Resume meets some critical requirements but has notable gaps in degree, years of experience, or specialized domain knowledge. Strong transferable skills may raise a LOW to MEDIUM, but not MEDIUM to HIGH.
+                - LOW: Resume does not meet most of the critical requirements or lacks alignment in degree, field, and experience level.
+
+                For example:
+                <confidence_rating_example>
+                    If a job description says this:
+                    <example_job_description>
+                        Product Review Engineer II
+                    
+                        Bachelor’s degree in Mechanical Engineering or related field or combination of similar education and work-related experience.
+                        · Minimum of 3-5 years relevant work experience in Engineering field required, preference for work experience in product testing/compliance, regulatory, codes and standards, or related field.
+                        · Working knowledge of both USA and Canadian product performance standards. 
+                        · Excellent written and oral communication skills. 
+                        · Computer literacy sufficient to operate spreadsheet and word processing applications (i.e., Microsoft Excel, Microsoft Word, Microsoft PowerPoint).
+                        · Ability to maintain a consistent degree of importance, strong organizational skills, and attention to detail with the ability to manage multiple priorities to complete tasks within established, and often, tight, timelines. 
+                        · Excellent skills in team collaboration and communication.
+                    </example_job_description>
+                    
+                    My resume needs contain experience in mechanical engineering or construction. 
+                    The most relevant skills in this job relate to mechanical engineering, so it should be given the most weight.
+                    Written and oral skills and computer literacy are far less relevant and specific to the job at hand, it should not weighted highly in the final evaluation.
+                    
+                    
+                </confidence_rating_example>
+            
+            </confidence_rating_explanation>
+            
+            <requirements_analysis_explanation>
+                The next field is requirements_analysis, a string value that holds your analysis of the requirements compared to my resume. 
+                Explain why you arrived at the final result.
+            </requirements_analysis_explanation>
+            
+            <relevant_field_explanations>
+                The next field is relevant_field, which is a string. 
+                Search for the academic degree that the job asks for. 
+                Then search for the degree in my resume. 
+                If they are in unrelated fields, label “different”. 
+                If the job's degree is a higher degree than mine (for example, if the job asks for a Master’s or PHD while my resume has a Bachelor’s), label as “different”. 
+                If the job asks for a degree that is the same as my resume, label it as “same”. 
+                If the job description asks for a degree that is in a field closely related to the one in my resume, label as “similar”.  
+                If you cannot find the degree level, label as "none". If you cannot find the major that the degree is in, label as "none".
+                
+                <relevant_field_example>
+                    For example, if the job requires a Bachelor's in Mechanical Engineering, 
+                    and my resume says I have a Bachelor's in Data Science, 
+                    label it "different", because those degrees are not related.
+                </relevant_field_example>
+                <relevant_field_example>
+                    If the job requires a Bachelor's in Computer Science, 
+                    and my resume says I have a Bachelor's in Data Science, 
+                    label it "similar", because those degrees are related.
+                </relevant_field_example>
+                <relevant_field_example>
+                    If the job requires a Master's in Computer Science, 
+                    and my resume says I have a Bachelor's in Data Science, 
+                    label it "different", because I have a Bachelor's, which is under a Master's.
+                </relevant_field_example>
+                
+            </relevant_field_explanations>
+            
+            
+        </job_score_requirements>
+        
+        Only output valid JSON, and do not write any additional text. Do not embed the json in any format such as ```json."""
+
          }
     ])
 

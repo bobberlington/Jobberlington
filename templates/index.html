@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jobberlington Search</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href= "{{ url_for('static',filename='styles/style.css') }}" />
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#"><span>Jobberlington</span></a>
+  <nav>
+    <a href="#" class="active">Search</a>
+    <a href="/output">Results</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-text">
+    <h1>Find Your<em>Next Role.</em></h1>
+    <p>Input your resume, and find out which jobs are best suited for you.</p>
+  </div>
+
+</section>
+
+<!-- Main Form -->
+<main>
+  <form action="{{ url_for('home') }}" method="POST" enctype="multipart/form-data">
+    <div class="form-grid">
+
+      <!-- Row 1: Search Query -->
+      <div class="panel">
+        <div class="panel-label">01 — Search</div>
+        <label class="field-label" for="search-query">LinkedIn Search Query</label>
+        <input type="text" id="search-query" name="search-query" placeholder='e.g. "Product Manager fintech"' />
+      </div>
+
+      <!-- Row 1: Location -->
+      <div class="panel">
+        <div class="panel-label">02 — Location</div>
+        <label class="field-label" for="job-location">Job Location</label>
+        <input type="text" id="job-location" name="job-location" placeholder="e.g. San Francisco, CA or Remote" />
+      </div>
+
+      <!-- Row 2: Resume Upload -->
+      <div class="panel">
+        <div class="panel-label">03 — Resume</div>
+        <label class="field-label">Upload Resume</label>
+        <div class="file-upload-wrap">
+          <input type="file" name="Resume" id="resume-upload" accept=".pdf" />
+          <div class="upload-icon">📄</div>
+          <div class="upload-text"><strong>Drop your PDF here</strong><br>or click to browse</div>
+          <div id="file-name"></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Max Pages -->
+      <div class="panel">
+        <div class="panel-label">04 — Scope</div>
+        <label class="field-label" for="page-count">Max Pages to Search</label>
+        <input type="number" id="page-count" name="page-count" min="1" max="100" value="5" placeholder="5" />
+      </div>
+
+      <!-- Row 3: Timespan (full width) -->
+      <div class="panel full accent-panel">
+        <div class="panel-label">05 — Timespan</div>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="job-time" id="any" value="0" checked />
+            <span class="toggle-pill">Any</span>
+          </label>
+          <label>
+            <input type="radio" name="job-time" id="Last Month" value="1" />
+            <span class="toggle-pill">Last Month</span>
+          </label>
+          <label>
+            <input type="radio" name="job-time" id="Last Week" value="2" />
+            <span class="toggle-pill">Last Week</span>
+          </label>
+          <label>
+            <input type="radio" name="job-time" id="Last Day" value="3" />
+            <span class="toggle-pill">Last Day</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Row 4: Experience Level -->
+      <div class="panel">
+        <div class="panel-label">06 — Experience Level</div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="job-experience" id="Internship" value="1" /><span class="toggle-pill">Internship</span></label>
+          <label><input type="checkbox" name="job-experience" id="Entry Level" value="2" /><span class="toggle-pill">Entry Level</span></label>
+          <label><input type="checkbox" name="job-experience" id="Associate" value="3" /><span class="toggle-pill">Associate</span></label>
+          <label><input type="checkbox" name="job-experience" id="Mid-Senior" value="4" /><span class="toggle-pill">Mid-Senior</span></label>
+          <label><input type="checkbox" name="job-experience" id="Director" value="5" /><span class="toggle-pill">Director</span></label>
+          <label><input type="checkbox" name="job-experience" id="Executive" value="6" /><span class="toggle-pill">Executive</span></label>
+        </div>
+      </div>
+
+      <!-- Row 4: Salary -->
+      <div class="panel">
+        <div class="panel-label">07 — Minimum Salary</div>
+        <div class="radio-group">
+          <label><input type="radio" name="salary" id="salary-0" value="0" checked /><span class="toggle-pill">Any</span></label>
+          <label><input type="radio" name="salary" id="salary-1" value="1" /><span class="toggle-pill">$40k+</span></label>
+          <label><input type="radio" name="salary" id="salary-2" value="2" /><span class="toggle-pill">$60k+</span></label>
+          <label><input type="radio" name="salary" id="salary-3" value="3" /><span class="toggle-pill">$80k+</span></label>
+          <label><input type="radio" name="salary" id="salary-4" value="4" /><span class="toggle-pill">$100k+</span></label>
+          <label><input type="radio" name="salary" id="salary-5" value="5" /><span class="toggle-pill">$120k+</span></label>
+          <label><input type="radio" name="salary" id="salary-6" value="6" /><span class="toggle-pill">$140k+</span></label>
+          <label><input type="radio" name="salary" id="salary-7" value="7" /><span class="toggle-pill">$160k+</span></label>
+          <label><input type="radio" name="salary" id="salary-8" value="8" /><span class="toggle-pill">$180k+</span></label>
+          <label><input type="radio" name="salary" id="salary-9" value="9" /><span class="toggle-pill">$200k+</span></label>
+        </div>
+      </div>
+
+      <!-- Submit row -->
+      <div class="submit-panel full">
+        <div class="submit-tagline">Ready to <span>Sift?</span></div>
+        <div class="submit-actions">
+          <a class="output-link" href="/output">View Results</a>
+          <input class="btn-submit" value="Search" type="submit">
+        </div>
+      </div>
+
+    </div>
+  </form>
+</main>
+
+<script>
+  // Show selected file name
+  document.getElementById('resume-upload').addEventListener('change', function () {
+    const name = this.files[0] ? this.files[0].name : '';
+    document.getElementById('file-name').textContent = name;
+  });
+</script>
+
+</body>
+</html>

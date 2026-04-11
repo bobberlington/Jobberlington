@@ -91,9 +91,9 @@ Header END -->
             {% for job in data %}
                 <!-- Card feed item START -->
                 {% if job['score'] < 70 %}
-                    <div class="card score-0">
+                    <div class="card score-2">
                 {% elif job['score'] >= 70 and job['score'] <= 80 %}
-                    <div class="card score-1">
+                    <div class="card score-2">
                 {% else %}
                     <div class="card score-2">
                 {% endif %}
@@ -139,7 +139,7 @@ Header END -->
                                             <div class="d-flex justify-content-between">
                                                 <h6 class="mb-1"> Job Score </h6>
                                             </div>
-                                            <p class="small mb-0">{{job["score"]}}</p>
+                                            <p class="small mb-0">{{job["confidence_value"]}}</p>
                                         </div>
                                     </div>
                                 </div>

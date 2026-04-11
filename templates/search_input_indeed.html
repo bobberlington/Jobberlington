@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Jobberlington Search Parameters</title>
+
+	<!-- Meta Tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="https://i.imgur.com/e60FoKF.png">
+
+	<!-- Google Font -->
+	<link rel="preconnect" href="https://fonts.googleapis.com/">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/css2.css') }}">
+
+
+	<!-- Theme CSS -->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+<style></style><style></style></head>
+
+<!-- **************** MAIN CONTENT START **************** -->
+<main>
+
+
+	<!-- Container START -->
+	<div class="container">
+		<div class="row g-4">
+
+
+			<!-- Main content START -->
+			<div class="col-md-8 col-lg-6 vstack gap-4">
+
+<div class="card">
+					<!-- Card header START -->
+					<div class="card-header border-0 pb-0">
+						<div class="d-flex align-items-center justify-content-between">
+							<div class="d-flex align-items-center">
+								<!-- Info -->
+								<div>
+									<div class="nav nav-divider">
+										<h6 class="nav-item card-title mb-0">Jobberlington</h6>
+									</div>
+									<p class="mb-0 small"></p>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!-- Card header END -->
+					<!-- Card body START -->
+					<div class="card-body">
+						<form action="{{ url_for('home') }}" method="POST">
+							<div class=my-wrapper-text>
+								<input type="text" placeholder="Indeed Search Query" class="search-query" name="search-query">
+							</div>
+							<div class=my-wrapper-text>
+								<input type="text" placeholder="Job Location" class="search-query" name="job-location">
+							</div>
+							<div class="my-wrapper-text">
+								<textarea placeholder="Input Resume (This will be saved for generation of cover letters/objective statements)
+" class="resume" name="resume"></textarea>
+							</div>
+							<div>
+									<div>
+										<b>Keywords you want to exclude. Separate keywords with commas.</b>
+									</div>
+									<textarea placeholder="Excluded words" class="blacklist" name="blacklist"></textarea>
+							</div>
+							<div class=my-wrapper-inputs>
+								<div>
+									<div class="input-label">
+										<b>Max jobs to search for (0 value means it will just go through all pages)</b>
+									</div>
+									<input type="number" id="max-jobs" name="max-jobs" class="max-jobs" min="0" max="1000" value="0">
+								</div>
+								<div class="pages">
+									<div class="input-label">
+										<b>Number of pages of jobs to look through:</b>
+									</div>
+									<input type="number" id="page-count" name="page-count" class="pages-input" min="1" max="5" value="1">
+								</div>
+								<div class="time">
+									<div class="input-label"><b>Job Posting Timespan</b></div>
+									<div>
+										<input type="radio" name="job-time" id="any" value="0">
+										<label for="any">Last 24 hours</label><br>
+										<input type="radio" name="job-time" id="month" value="1">
+										<label for="month">Last 3 Days</label><br>
+										<input type="radio" name="job-time" id="week" value="2">
+										<label for="week">Last 7 Days</label><br>
+										<input type="radio" name="job-time" id="day" value="3">
+										<label for="day">Last 14 Days</label><br>
+
+									</div>
+									<div class="remote">
+									<div class="input-label"><b>Remote</b></div>
+									<div>
+										<input type="radio" name="remote" id="All jobs" value="0">
+										<label for="All Jobs">All jobs</label><br>
+										<input type="radio" name="remote" id="Hybrid Work" value="1">
+										<label for="Hybrid Work">Hybrid Work</label><br>
+										<input type="radio" name="remote" id="Remote" value="2">
+										<label for="Remote">Remote</label><br>
+
+									</div>
+								</div>
+									<div class="skill">
+									<div class="input-label"><b>Developer Skill</b></div>
+									<div>
+										<input type="checkbox" name="developer-skill" id="Python" value="Python">
+										<label for="Python">Python</label><br>
+										<input type="checkbox" name="developer-skill" id="C++" value="C++">
+										<label for="C++">C++</label><br>
+										<input type="checkbox" name="developer-skill" id="Java" value="Java">
+										<label for="Java">Java</label><br>
+										<input type="checkbox" name="developer-skill" id="JavaScript" value="JavaScript">
+										<label for="JavaScript">JavaScript</label><br>
+										<input type="checkbox" name="developer-skill" id="CSS" value="CSS">
+										<label for="CSS">CSS</label><br>
+										<input type="checkbox" name="developer-skill" id="Go" value="Go">
+										<label for="Go">Go</label><br>
+										<input type="checkbox" name="developer-skill" id="Node.js" value="Node.js">
+										<label for="Node.js">Node.js</label><br>
+										<input type="checkbox" name="developer-skill" id="C#" value="C#">
+										<label for="C#">C#</label><br>
+										<input type="checkbox" name="developer-skill" id="HTML" value="HTML">
+										<label for="HTML">HTML</label><br>
+										<input type="checkbox" name="developer-skill" id="SQL" value="SQL">
+										<label for="SQL">SQL</label><br>
+										<input type="checkbox" name="developer-skill" id="React" value="React">
+										<label for="React">React</label><br>
+										<input type="checkbox" name="developer-skill" id="TypeScript" value="TypeScript">
+										<label for="TypeScript">TypeScript</label><br>
+										<input type="checkbox" name="developer-skill" id="Spring Framework" value="Spring Framework">
+										<label for="Spring Framework">Spring Framework</label><br>
+										<input type="checkbox" name="developer-skill" id="Swift" value="Swift">
+										<label for="Swift">Swift</label><br>
+										<input type="checkbox" name="developer-skill" id="Angular" value="Angular">
+										<label for="Angular">Angular</label><br>
+										<input type="checkbox" name="developer-skill" id="Scala" value="Scala">
+										<label for="Scala">Scala</label><br>
+										<input type="checkbox" name="developer-skill" id="Perl" value="Perl">
+										<label for="Perl">Perl</label><br>
+										<input type="checkbox" name="developer-skill" id="PHP" value="PHP">
+										<label for="PHP">PHP</label><br>
+										<input type="checkbox" name="developer-skill" id=".NET" value=".NET">
+										<label for=".NET">.NET</label><br>
+										<input type="checkbox" name="developer-skill" id="Flutter" value="Flutter">
+										<label for="Flutter">Flutter</label><br>
+									</div>
+								</div>
+								<div class="experience">
+									<div class="input-label"><b>Job Experience Level</b></div>
+									<div>
+										<input type="checkbox" name="job-experience" id="All" value="0">
+										<label for="All">All Experience Levels</label><br>
+										<input type="checkbox" name="job-experience" id="Entry Level" value="1">
+										<label for="Entry Level">Entry Level</label><br>
+										<input type="checkbox" name="job-experience" id="Mid Level" value="2">
+										<label for="Mid Level">Mid Level</label><br>
+									</div>
+								</div>
+
+								<div class="salary">
+									<div class="input-label"><b>Salary</b></div>
+									<div>
+										<input type="radio" name="salary" id="salary-0" value="0">
+										<label for="salary-0">All Salaries</label><br>
+										<input type="radio" name="salary" id="salary-1" value="1">
+										<label for="salary-1">$35+/hr</label><br>
+										<input type="radio" name="salary" id="salary-2" value="2">
+										<label for="salary-2">$45+/hr</label><br>
+										<input type="radio" name="salary" id="salary-3" value="3">
+										<label for="salary-3">$47.50+/hr</label><br>
+										<input type="radio" name="salary" id="salary-4" value="4">
+										<label for="salary-4">$52.50+/hr</label><br>
+										<input type="radio" name="salary" id="salary-5" value="5">
+										<label for="salary-5">$55.00+/hr</label><br>
+										<input type="radio" name="salary" id="salary-6" value="6">
+										<label for="salary-6">Only show jobs with pay information</label><br>
+									</div>
+								</div>
+
+
+								<div class="education">
+									<div class="input-label"><b>Education Level</b></div>
+									<div>
+										<input type="radio" name="education" id="education-0" value="0">
+										<label for="education-0">All Education Levels</label><br>
+										<input type="radio" name="education" id="education-1" value="1">
+										<label for="education-1">High School Degree</label><br>
+										<input type="radio" name="education" id="education-2" value="2">
+										<label for="education-2">Associate Degree</label><br>
+										<input type="radio" name="education" id="education-3" value="3">
+										<label for="education-3">Bachelor's Degree</label><br>
+										<input type="radio" name="education" id="education-4" value="4">
+										<label for="education-4">Master's Degree</label><br>
+										<input type="radio" name="education" id="education-5" value="5">
+										<label for="education-5">Doctoral Degree</label><br>
+									</div>
+								</div>
+
+								<div class="type">
+									<div class="input-label"><b>Education Level</b></div>
+									<div>
+										<input type="checkbox" name="education" id="developer-type-0" value="Back End Developers">
+										<label for="developer-type-0">Back End Developers</label><br>
+										<input type="checkbox" name="education" id="developer-type-1" value="Embedded Software & Firmware Developers">
+										<label for="developer-type-1">Embedded Software & Firmware Developers</label><br>
+										<input type="checkbox" name="education" id="developer-type-2" value="Front End Developers">
+										<label for="developer-type-2">Front End Developers</label><br>
+										<input type="checkbox" name="education" id="developer-type-3" value="Game Developers">
+										<label for="developer-type-3">Game Developers</label><br>
+										<input type="checkbox" name="education" id="developer-type-4" value="Software Development Operations Occupations">
+										<label for="developer-type-4">Software Development Operations Occupations</label><br>
+									</div>
+								</div>
+
+								<div class="package">
+									<div class="input-label"><b>Compensation Package</b></div>
+									<div>
+										<input type="radio" name="package" id="compensation-0" value="Hourly pay">
+										<label for="compensation-0">Hourly pay</label><br>
+										<input type="checkbox" name="package" id="compensation-1" value="RSU">
+										<label for="compensation-1">RSU</label><br>
+										<input type="checkbox" name="package" id="compensation-2" value="Overtime pay">
+										<label for="compensation-2">Overtime pay</label><br>
+										<input type="checkbox" name="package" id="compensation-3" value="Employee stock purchase plan">
+										<label for="compensation-3">Employee stock purchase plan</label><br>
+										<input type="checkbox" name="package" id="compensation-4" value="Performance bonus">
+										<label for="compensation-4">Performance bonus</label><br>
+										<input type="checkbox" name="package" id="compensation-5" value="Quarterly bonus">
+										<label for="compensation-5">Quarterly bonus</label><br>
+										<input type="checkbox" name="package" id="compensation-6" value="Stock options">
+										<label for="compensation-6">Stock options</label><br>
+										<input type="checkbox" name="package" id="compensation-7" value="Yearly bonus">
+										<label for="compensation-7">Yearly bonus</label><br>
+									</div>
+								</div>
+
+								<div class="distance">
+									<div class="input-label"><b>Compensation Package</b></div>
+									<div>
+										<input type="radio" name="package" id="distance-0" value="Exact Location only">
+										<label for="distance-0">Exact Location only</label><br>
+										<input type="radio" name="package" id="distance-1" value="Within 5 miles">
+										<label for="distance-1">Within 5 miles</label><br>
+										<input type="radio" name="package" id="distance-2" value="Within 10 miles>
+										<label for="distance-2">Within 10 miles</label><br>
+										<input type="radio" name="package" id="distance-3" value="Within 15 miles">
+										<label for="distance-3">Within 15 miles</label><br>
+										<input type="radio" name="package" id="distance-4" value="Within 25 miles">
+										<label for="distance-4">Within 25 miles</label><br>
+										<input type="radio" name="package" id="distance-5" value="Within 35 miles">
+										<label for="distance-5">Within 35 miles</label><br>
+										<input type="radio" name="package" id="distance-6" value="Within 50 miles">
+										<label for="distance-6">Within 50 miles</label><br>
+										<input type="radio" name="package" id="distance-7" value="Within 100 miles">
+										<label for="distance-7">Within 100 miles</label><br>
+									</div>
+								</div>
+								<input type="submit" id="Submit" value="Search Jobs" class="submit-button">
+								<script>
+
+								document.getElementById('Submit').onclick = change_text;
+
+								function change_text() {
+									setInterval(function() {
+
+										var texts = ['Searching.', 'Searching..', 'Searching...'];
+										if (document.getElementById('Submit').value == texts[0]) {
+											document.getElementById('Submit').value = texts[1];
+										}
+										else
+										if (document.getElementById('Submit').value == texts[1]) {
+											document.getElementById('Submit').value = texts[2];
+										}
+										else {
+											document.getElementById('Submit').value = texts[0];
+										}
+										if (index == texts.length) {
+											index = 0;
+										}
+									}, 700);
+								}
+							</script>
+								<a href="/output"> View analyzed jobs</a>
+							</div>
+						</form>
+
+
+
+
+					</div>
+					<!-- Card body END -->
+					<!-- Card footer START -->
+					<div class="card-footer border-0 pt-0">
+
+					</div>
+					<!-- Card footer END -->
+				</div>
+				<!-- Card feed item END -->
+
+
+			</div>
+			<!-- Main content END -->
+
+
+		</div> <!-- Row END -->
+	</div>
+	<!-- Container END -->
+
+</main>
+<!-- **************** MAIN CONTENT END **************** -->
+
+
+		</div>
+	</div>
+</div>
+<!-- Modal create feed END -->
+
+
+
+<!-- =======================
+JS libraries, plugins and custom scripts -->
+
+<!-- Bootstrap JS -->
+
+
+
+
+</body></html>
