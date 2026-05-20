@@ -1,299 +1,191 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
 import time
 from credentials import email_login, linkedin_password
-import imaplib
-import email
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, StaleElementReferenceException
-from selenium.webdriver.common.action_chains import ActionChains
-import pickle
+from webdriver_manager.chrome import ChromeDriverManager
 from tkinter import messagebox
-"""
-def get_gmail_credentials():
-    SCOPES = ['https://mail.google.com/']
-    creds = None
-    # The file token.json stores the user's access and refresh tokens.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-    return creds
-"""
+import zendriver as uc
+from asyncio.exceptions import TimeoutError
+import asyncio
+import re
 
-"""
-Search through linkedin jobs.
+clean = re.compile(r'<.*?>')
+spaces = re.compile(r'\s+')
+
+def cleanhtml(raw_html):
+  cleantext = re.sub(clean, '', raw_html)
+  cleantext = re.sub(spaces, ' ', cleantext)
+  return cleantext
 
 
-search_query: The search query
-
-pages: The pages to look for
-
-date_filter: An int with the values values:
-1: Searches for jobs in the "past month"
-2: Searches for jobs in the "past week"
-3: Searches for jobs in the "past 24 hours"
-Defaults to "any time" otherwise
-
-experience_filter: list with the values:
-[
-1 - Whether to search "Internship" or not
-2 - Whether to search "Entry level" or not
-3 - Whether to search "Associate" or not
-4 - Whether to search "Mid-Senior level" or not
-5 - Whether to search "Director" or not
-6 - Whether to search "Executive" or not
-]
-Defaults to searching everything otherwise
-
-salary_filter: int with the values:
-
-1: Searches for jobs with salary $40k+
-2: Searches for jobs with salary $60k+
-3: Searches for jobs with salary $80k+
-4: Searches for jobs with salary $100k+
-5: Searches for jobs with salary $120k+
-6: Searches for jobs with salary $140k+
-7: Searches for jobs with salary $160k+
-8: Searches for jobs with salary $180k+
-9: Searches for jobs with salary $200k+
-Defaults to searching for everything otherwise
-
-"""
-
-
-def scrape_linkedin_jobs(search_query, pages=1, date_filter=0, experience_filter=None, salary_filter=0, duplicate_job_threshold=3, max_jobs=0, browser="", location=""):
-    if browser == "chrome":
-        driver = webdriver.Chrome()
-    elif browser == "firefox":
-        driver = webdriver.Firefox()
-    elif browser == "safari":
-        driver = webdriver.Safari()
-    elif browser == "edge":
-        driver = webdriver.Edge()
-    else:
-        driver = webdriver.Chrome()
-
-    driver.get("https://www.linkedin.com/jobs")
+async def scrape_linkedin_jobs(search_query, pages=1,
+                             date_filter=None,
+                             remote_filter=None,
+                             experience_filter=None,
+                             salary_filter=None,
+                             location=""):
+    driver = await uc.start()
+    tab = await driver.get("https://www.linkedin.com/jobs")
     try:
-        # cookies = pickle.load(open("cookies_linkedin.pkl", "rb"))
-        # for cookie in cookies:
-        #     driver.add_cookie(cookie)
+        await driver.cookies.load("cookies_linkedin.dat")
+        await tab.reload()
         print("Cookies collected!")
     except FileNotFoundError:
         print("Cookies not found")
-    time.sleep(2)
-    driver.refresh()
-    if email_login == None or linkedin_password == None:
-        print("No credentials!")
-        # messagebox.showwarning(title="No credentials!", message="No login credentials found in credentials.py! You will have to log in manually. Press OK only after you have logged in.")
-        time.sleep(1)
-    else:
-        try:
-            email_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_key")]')
-            email_box.send_keys(email_login)
-            password_box = driver.find_element(By.XPATH, '//input[contains(@id, "session_password")]')
-            password_box.send_keys(linkedin_password)
-            submit_button = driver.find_element(By.XPATH, '//button[contains(@data-id, "sign-in-form__submit-btn")]')
-            submit_button.click()
-            time.sleep(2)
-        except NoSuchElementException:
-            pass
     try:
-        search_box = driver.find_element(By.XPATH, '//input[contains(@placeholder, "Title, skill or Company")]')
-    except NoSuchElementException:
-        print("Can't find the search bar!")
-        # messagebox.showwarning(title="Something went wrong!",
-        #                   message="I can't find the LinkedIn Search Bar! Is there a captcha? Fill it out if so, then click OK.")
+        time.sleep(3)
+        email_box = await tab.select("input[id='session_key']", timeout=5)
+        await email_box.focus()
+        await email_box.send_keys(email_login)
+        time.sleep(2)
+        password_box = await tab.select("input[id='session_password'", timeout=5)
+        await password_box.focus()
+        await password_box.send_keys(linkedin_password)
         time.sleep(1)
-        search_box = driver.find_element(By.XPATH, '//input[contains(@placeholder, "Title, skill or Company")]')
-    search_box.send_keys(search_query)
-    search_box.send_keys(Keys.RETURN)
-    time.sleep(10)  # Wait for results to load
-    print("ADJSIFJSDF")
+        submit = await tab.select("button[type='submit']", timeout=5)
+        await submit.mouse_move()
+        await submit.mouse_click()
+        print("Trying to save cookies.")
+        await driver.cookies.save("cookies_linkedin.dat")
+        print("Cookie saved!")
+    except Exception:
+        pass
+
+    starting_url = "https://www.linkedin.com/jobs/search/"
+    date_url = ""
+    experience_url = ""
+    location_url = f"&geoId={location}"
+    salary_url = ""
+    remote_url = ""
+    query_url = f"&keywords={search_query.lower().replace(' ', '%20')}"
+
     job_postings = []
     job_counts = {}
-
-    if location != "":
-        try:
-            location_bar = driver.find_element(By.XPATH, '//input[contains(@id, "jobs-search-box-location-id-ember")]')
-            location_bar.click()
-            location_bar.clear()
-            location_bar.send_keys(location)
-            location_bar.send_keys(Keys.RETURN)
-            location_bar.send_keys(Keys.RETURN)
-            time.sleep(3)
-        except NoSuchElementException:
-            pass
-
-    if date_filter in [1, 2, 3]:
-        try:
-            date_filter_button = driver.find_element(By.XPATH,'//button[contains(@id, "searchFilter_timePostedRange")]')
-            date_filter_button.click()
-            time.sleep(1)
-            if date_filter == 1:
-                past_month = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r2592000")]')
-                past_month.click()
-            elif date_filter == 2:
-                past_week = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r604800")]')
-                past_week.click()
-            elif date_filter == 3:
-                past_day = driver.find_element(By.XPATH, '//label[contains(@for, "timePostedRange-r86400")]')
-                past_day.click()
-            date_filter_confirm_list = driver.find_elements(By.XPATH,'//button[contains(@class, "artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml2")]')
-            for button in date_filter_confirm_list:
-                try:
-                    button.click()
-                except (ElementNotInteractableException, StaleElementReferenceException) as e:
-                    print(e)
-            time.sleep(4)
-        except (NoSuchElementException, ElementNotInteractableException) as e:
-            print(e)
+    # Scrolling down the job screen
+    if date_filter in ["Any time", "Past month", "Past week", "Past 24 hours"]:
+        date_url_dict = {"Any time": "",
+                         "Past month": "&f_TPR=r2592000",
+                         "Past week": "&f_TPR=r604800",
+                         "Past 24 hours": "&f_TPR=r86400"}
+        date_url = date_url_dict[date_filter]
 
     if experience_filter is not None:
-        try:
-            experience_filter_button = driver.find_element(By.XPATH,'//button[contains(@id, "searchFilter_experience")]')
-            experience_filter_button.click()
-            for key in experience_filter:
-                try:
-                    time.sleep(0.5)
-                    filter = driver.find_element(By.XPATH, f'//label[contains(@for, "experience-{key}")]')
-                    filter.click()
-                except NoSuchElementException:
-                    print(f"Picked invalid experience level: {key}")
-                    continue
-            experience_filter_confirm_list = driver.find_elements(By.XPATH, '//button[contains(@class, "artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml2")]')
-            for button in experience_filter_confirm_list:
-                try:
-                    button.click()
-                except (ElementNotInteractableException, StaleElementReferenceException) as e:
-                    print(e)
-            time.sleep(4)
-        except (NoSuchElementException, ElementNotInteractableException) as e:
-            print(e)
+        experience_url_dict = {"Internship" : "1",
+                               "Entry level" : "2",
+                               "Associate" : "3",
+                               "Mid-Senior level": "4",
+                               "Director": "5",
+                               "Executive": "6"
+                               }
+        # The url is structured f_E=1%2C2%2C3, where the first value is numbered, then all subsequent values are prefixed with %2C
+        experience_url = "&f_E="
+        for i in range(len(experience_filter)):
+            if i > 0:
+                experience_url += f"%2C{experience_url_dict[experience_filter[i]]}"
+            else:
+                experience_url += f"{experience_url_dict[experience_filter[i]]}"
 
     if salary_filter in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-        try:
-            salary_filter_button = driver.find_element(By.XPATH,
-                                                       '//button[contains(@id, "searchFilter_salaryBucketV2")]')
-            salary_filter_button.click()
-            time.sleep(0.5)
-            try:
-                filter = driver.find_element(By.XPATH, f'//label[contains(@for, "salaryBucketV2-{salary_filter}")]')
-                filter.click()
-            except NoSuchElementException:
-                print(f"Invalid salary value: {salary_filter}")
-            salary_filter_confirm_list = driver.find_elements(By.XPATH,'//button[contains(@class, "artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml2")]')
-            for button in salary_filter_confirm_list:
-                try:
-                    button.click()
-                except (ElementNotInteractableException, StaleElementReferenceException) as e:
-                    print(e)
-            time.sleep(4)
-        except (NoSuchElementException, ElementNotInteractableException) as e:
-            print(e)
-
-    # Loop through all job filters
-    max_jobs_found = False
-    for page in range(1, pages + 1):
-        jobs = driver.find_elements(By.XPATH, '//div[contains(@class, "job-card-container--clickable")]')
-
-        for i in range(0, 50):
-            time.sleep(3)
-            try:
-                job = jobs[i]
-            except IndexError:
-                break
-            try:
-                driver.execute_script("return arguments[0].scrollIntoView(true);", job)
-            except:
-                break
-            jobs = driver.find_elements(By.XPATH, '//div[contains(@class, "job-card-container--clickable")]')
-            job.click()
-            time.sleep(0.75)
-            try:
-                job_card = driver.find_element(By.XPATH, '//div[contains(@class, "jobs-search__job-details--container")]')
-            except NoSuchElementException:
-                print("Can't find the job card")
-                continue
-            # Skip "no longer accepting applications"
-            try:
-                no_applications = driver.find_element(By.XPATH, '//span[contains(@class, "artdeco-inline-feedback__message")]').text
-                if no_applications == "No longer accepting applications":
-                    print("This job isn't taking applications")
-                    continue
-            except NoSuchElementException:
-                pass
-
-            try:
-
-                description = job_card.find_element(By.XPATH, '//div[contains(@id, "job-details")]').text
-                description_full = job_card.find_element(By.XPATH, '//div[contains(@id, "job-details")]').get_attribute("innerHTML")
-            except NoSuchElementException:
-                description = "N/A"
-                description_full = "N/A"
-            try:
-                title = job_card.find_element(By.XPATH, '//div[contains(@class, "t-24 job-details-jobs-unified-top-card__job-title")]/h1[contains(@class, "t-24 t-bold inline")]/a').text
-            except NoSuchElementException:
-                title = "N/A"
-            try:
-                company = job_card.find_element(By.XPATH, './/div[contains(@class, "job-details-jobs-unified-top-card__company-name")]/a').text
-            except NoSuchElementException:
-                company = "N/A"
-            try:
-                details = job_card.find_element(By.XPATH, './/div[contains(@class, "job-details-jobs-unified-top-card__primary-description-without-tagline mb2")]').text
-            except NoSuchElementException:
-                details = "N/A"
-            try:
-                logo = job.find_elements(By.XPATH, '//img[contains(@class, "ivm-view-attr__img--centered EntityPhoto-square-4   evi-image lazy-image ember-view")]')[i].get_attribute("src")
-            except:
-                logo = "https://i.imgur.com/e60FoKF.png"
-            job_dict = {
-                'title': title,
-                'company': company,
-                'description': description,
-                'description_html': description_full,
-                'details' : details,
-                'url' : driver.current_url,
-                'logo' : logo
-            }
-            if company in job_counts:
-                job_counts[company] += 1
+        salary_url = f"&f_SB2={salary_filter}"
+    # Values range 0-4
+    if remote_filter is not None:
+        remote_url_dict = {"On-site": "1",
+                               "Hybrid": "2",
+                               "Remote": "3",
+                               }
+        # The url is structured f_E=1%2C2%2C3, where the first value is numbered, then all subsequent values are prefixed with %2C
+        remote_url = "&f_WT="
+        for i in range(len(remote_filter)):
+            if i > 0:
+                remote_url += f"%2C{remote_url_dict[remote_filter[i]]}"
             else:
-                job_counts[company] = 1
-            if job_counts[company] > duplicate_job_threshold:
-                continue
-            job_postings.append(job_dict)
-            if max_jobs > 0 and len(job_postings) >= max_jobs:
-                max_jobs_found = True
+                remote_url += f"{remote_url_dict[remote_filter[i]]}"
+
+    url = f"{starting_url}?{experience_url}{salary_url}{date_url}{remote_url}{location_url}{query_url}"
+    tab = await driver.get(url)
+    current_page = 0
+    all_job_ids = []
+    job_count = 0
+    if pages.is_integer():
+        pages = int(pages)
+    max_jobs = int(pages * 25)
+
+
+    while current_page < pages :
+        if job_count > max_jobs:
+            break
+        await tab
+        time.sleep(2)
+        job_ids = []
+        job_cards = await tab.select_all("li[data-occludable-job-id]")
+        print(len(job_cards))
+        current_id_length = len(all_job_ids)
+        for card in job_cards:
+            job_id = card.get("data-occludable-job-id")
+            if job_id not in all_job_ids:
+                all_job_ids.append(job_id)
+                job_ids.append(job_id)
+        print(job_ids)
+        if len(all_job_ids) == 0:
+            print("End of jobs?")
+            break
+        elif len(all_job_ids) == current_id_length:
+            all_job_ids = []
+            current_page += 1
+            page_url = f"&start={current_page * 25}"
+            url = f"{starting_url}?{experience_url}{salary_url}{date_url}{remote_url}{location_url}{query_url}{page_url}"
+            tab = await driver.get(url)
+            await tab
+            continue
+
+        for job_id in job_ids:
+            if job_count > max_jobs:
                 break
-            print("The Job:")
-            print(job_dict)
+            try:
+                job_card_location = await tab.select(f"li[data-occludable-job-id='{job_id}']", timeout = 2)
+                await job_card_location.scroll_into_view()
+                job_card = await tab.select(f"div[data-job-id='{job_id}']", timeout = 2)
+                await job_card.click()
+                await job_card.update()
+                job = await tab.select("div[class='jobs-search__job-details--wrapper']")
+                try:
+                    title = (await job.query_selector("h1[class*='t-24 t-bold inline']")).text
+                except AttributeError:
+                    title = None
+                try:
+                    company = (await job.query_selector("div[class*='job-details-jobs-unified-top-card__company-name']")).text
+                except AttributeError:
+                    company = None
+                try:
+                    details = (await job.query_selector("div[ob-details-jobs-unified-top-card__tertiary-description-container")).text
+                except AttributeError:
+                    details = None
+                try:
+                    description_full = await (await job.query_selector("div[id*=job-details]")).get_html()
+                    description = cleanhtml(cleanhtml(description_full).replace("\n", " "))
+                except AttributeError:
+                    description = None
+                    description_full = None
 
-        # Find and click the next page button
+                job_dict = {
+                    'title': title,
+                    'company': company,
+                    'description': description,
+                    'description_html': description_full,
+                    'details': details,
+                    'url': tab.url,
+                    'logo': None
+                }
+                print(job_dict)
+                job_postings.append(job_dict)
+            except asyncio.exceptions.TimeoutError as e:
+                print(e)
+                continue
+            job_count += 1
+            time.sleep(1)
 
-        if max_jobs_found:
-            break
-        try:
-            next_page = driver.find_element(By.XPATH, f'//button[@aria-label="Page {page + 1}"]')
-            next_page.click()
-            time.sleep(2)  # Wait for the next page to load
-            print(f"Page {page + 1}")
-        except Exception as e:
-            print("Reached the end of pages or encountered an error:", e)
-            break
-    pickle.dump(driver.get_cookies(), open("cookies_linkedin.pkl", "wb"))
-    driver.quit()
+
     return job_postings
 
+
 if __name__ == "__main__":
-    scrape_linkedin_jobs("Software Engineer", 5, date_filter=1, experience_filter=[1, 2, 3], salary_filter=3, max_jobs=4)
+    asyncio.run(scrape_linkedin_jobs("Software Engineer", 5, location="106233382", date_filter="Any time", experience_filter=["Internship", "Associate"], salary_filter=3, remote_filter=["On-site", "Hybrid", "Remote"], max_jobs=4))
 

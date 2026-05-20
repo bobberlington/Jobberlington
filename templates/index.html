@@ -31,18 +31,29 @@
   <form action="{{ url_for('home') }}" method="POST" enctype="multipart/form-data">
     <div class="form-grid">
 
+      <div class="panel full accent-panel">
+        <div class="submit-tagline">Upload jobberlington.json</div>
+          <div class="file-upload-wrap">
+          <input type="file" name="Json" id="json-upload" accept=".json" />
+          <div class="upload-icon">📄</div>
+          <div class="upload-text"><strong>If you have a jobberlington.json file, upload it here and click Submit to skip parameter input.</strong><br>Click to browse.</div>
+          <div id="json-file-name"></div>
+        </div>
+      </div>
+
       <!-- Row 1: Search Query -->
       <div class="panel">
         <div class="panel-label">01 — Search</div>
         <label class="field-label" for="search-query">LinkedIn Search Query</label>
-        <input type="text" id="search-query" name="search-query" placeholder='e.g. "Product Manager fintech"' />
+        <input type="text" id="search-query" name="search-query" placeholder='e.g. "Software Engineer"' />
       </div>
 
       <!-- Row 1: Location -->
       <div class="panel">
         <div class="panel-label">02 — Location</div>
-        <label class="field-label" for="job-location">Job Location</label>
-        <input type="text" id="job-location" name="job-location" placeholder="e.g. San Francisco, CA or Remote" />
+        <label class="field-label" for="job-location">Geo ID</label>
+        <input type="text" id="job-location" name="job-location" placeholder="e.g. 106233382" />
+        <img src="{{ url_for('static',filename='geoid.png') }}">
       </div>
 
       <!-- Row 2: Resume Upload -->
@@ -53,7 +64,7 @@
           <input type="file" name="Resume" id="resume-upload" accept=".pdf" />
           <div class="upload-icon">📄</div>
           <div class="upload-text"><strong>Drop your PDF here</strong><br>or click to browse</div>
-          <div id="file-name"></div>
+          <div id="resume-file-name"></div>
         </div>
       </div>
 
@@ -65,23 +76,23 @@
       </div>
 
       <!-- Row 3: Timespan (full width) -->
-      <div class="panel full accent-panel">
+      <div class="panel full panel">
         <div class="panel-label">05 — Timespan</div>
         <div class="radio-group">
           <label>
-            <input type="radio" name="job-time" id="any" value="0" checked />
+            <input type="radio" name="job-time" id="any" value="Any time" checked />
             <span class="toggle-pill">Any</span>
           </label>
           <label>
-            <input type="radio" name="job-time" id="Last Month" value="1" />
+            <input type="radio" name="job-time" id="Last Month" value="Past month" />
             <span class="toggle-pill">Last Month</span>
           </label>
           <label>
-            <input type="radio" name="job-time" id="Last Week" value="2" />
+            <input type="radio" name="job-time" id="Last Week" value="Past week" />
             <span class="toggle-pill">Last Week</span>
           </label>
           <label>
-            <input type="radio" name="job-time" id="Last Day" value="3" />
+            <input type="radio" name="job-time" id="Last Day" value="Past 24 hours" />
             <span class="toggle-pill">Last Day</span>
           </label>
         </div>
@@ -91,12 +102,12 @@
       <div class="panel">
         <div class="panel-label">06 — Experience Level</div>
         <div class="checkbox-group">
-          <label><input type="checkbox" name="job-experience" id="Internship" value="1" /><span class="toggle-pill">Internship</span></label>
-          <label><input type="checkbox" name="job-experience" id="Entry Level" value="2" /><span class="toggle-pill">Entry Level</span></label>
-          <label><input type="checkbox" name="job-experience" id="Associate" value="3" /><span class="toggle-pill">Associate</span></label>
-          <label><input type="checkbox" name="job-experience" id="Mid-Senior" value="4" /><span class="toggle-pill">Mid-Senior</span></label>
-          <label><input type="checkbox" name="job-experience" id="Director" value="5" /><span class="toggle-pill">Director</span></label>
-          <label><input type="checkbox" name="job-experience" id="Executive" value="6" /><span class="toggle-pill">Executive</span></label>
+          <label><input type="checkbox" name="job-experience" id="Internship" value="Internship" /><span class="toggle-pill">Internship</span></label>
+          <label><input type="checkbox" name="job-experience" id="Entry Level" value="Entry level" /><span class="toggle-pill">Entry Level</span></label>
+          <label><input type="checkbox" name="job-experience" id="Associate" value="Associate" /><span class="toggle-pill">Associate</span></label>
+          <label><input type="checkbox" name="job-experience" id="Mid-Senior" value="Mid-Senior level" /><span class="toggle-pill">Mid-Senior</span></label>
+          <label><input type="checkbox" name="job-experience" id="Director" value="Director" /><span class="toggle-pill">Director</span></label>
+          <label><input type="checkbox" name="job-experience" id="Executive" value="Executive" /><span class="toggle-pill">Executive</span></label>
         </div>
       </div>
 
@@ -118,7 +129,7 @@
       </div>
 
       <!-- Submit row -->
-      <div class="submit-panel full">
+      <div class="panel full accent-panel">
         <div class="submit-tagline">Ready to <span>Sift?</span></div>
         <div class="submit-actions">
           <a class="output-link" href="/output">View Results</a>
@@ -134,7 +145,11 @@
   // Show selected file name
   document.getElementById('resume-upload').addEventListener('change', function () {
     const name = this.files[0] ? this.files[0].name : '';
-    document.getElementById('file-name').textContent = name;
+    document.getElementById('resume-file-name').textContent = name;
+  });
+    document.getElementById('json-upload').addEventListener('change', function () {
+    const name = this.files[0] ? this.files[0].name : '';
+    document.getElementById('json-file-name').textContent = name;
   });
 </script>
 

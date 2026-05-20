@@ -8,6 +8,7 @@ __pycache__/
 
 *.DS_STORE
 Sample Resume/*
+excluded/*
 database_stuff.py
 export_jobs.py
 generate_htmltest.py
@@ -171,3 +172,5 @@ Bradley Chang Resume 2024-02-12.docx
 updated-resume.docx
 jobs.db
 jobs.db
+credentials.py
+credentials.py

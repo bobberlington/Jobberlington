@@ -1,0 +1,18 @@
+{
+  "search_query": "Software Engineer",
+  "job_location": "106233382",
+  "page_count": 2,
+  "salary": 2,
+  "job_time": "Past week",
+  "job_experience": [
+    "Internship",
+    "Entry level",
+    "Associate",
+    "Mid-Senior level",
+    "Director",
+    "Executive"
+  ],
+  "resume": "\n- Educational Status:\n  - MS in Artificial Intelligence at San Jose State University (expected graduation August 2025)\n  - Bachelor of Science in Computer Science & Data Science at Purdue University (graduated December 2023)\n\n- Technical Skills:\n  - Programming Languages: Python, Java, C, SQL, NoSQL (MongoDB)\n  - Frameworks/Tools: React.js, Node.js, Express.js, Selenium, Pandas, scikit-learn, Docker, Git, GitHub Actions\n  - Databases: MySQL, PostgreSQL, MongoDB\n\n- Professional Experience:\n  - IT Intern at DELTA ELECTRONICS, San Jose, CA (May 2023 - August 2023)\n    - Migrated legacy transaction transfer software from SQL Server to SAP using Python and SQL.\n    - Developed automation scripts for data transfer to SAP.\n    - Improved system integration and workflow efficiency.\n  - Project Team Leader at PURDUE UNIVERSITY, West Lafayette, IN (August 2022 - May 2023)\n    - Analyzed customer trends in life insurance plan selection using Python, R, and SQL.\n    - Developed an automated visualization tool for customer histories.\n    - Enhanced segmentation and targeting strategies.\n  - Software QA at FRUITBAT FACTORY (April 2022 - Present)\n    - Conducted QA testing for the online board game 100% Orange Juice.\n    - Collaborated with developers on feature enhancements.\n    - Contributed to faster release cycles and improved player experience.\n\n- Personal Projects:\n  - GPT Personalize Job Searching Tool (December 2023 - Present)\n    - Built an AI-driven job search automation web app using Flask and SQLite.\n    - Automated scraping of LinkedIn and Indeed postings.\n    - Integrated ChatGPT for job description screening and custom cover letters.\n    - Achieved a ~90% reduction in time spent on job searching.\n  - AutoCroissant Discord Bot (December 2024 - Present)\n    - Developed a Python-based Discord bot for extracting card data from Photoshop files.\n    - Automated search for card descriptions and statistics.\n    - Integrated an LLM for generating new card concepts.\n  - Night Stalker Revived (June 2022 - August 2022)\n    - Recreated a classic maze-based shooting game Night Stalker in Java.",
+  "custom_job_summarization": null,
+  "custom_job_evaluation": null
+}
