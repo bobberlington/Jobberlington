@@ -1,4 +1,6 @@
 import time
+import tkinter.messagebox
+
 from credentials import email_login, linkedin_password
 from webdriver_manager.chrome import ChromeDriverManager
 from tkinter import messagebox
@@ -43,6 +45,7 @@ async def scrape_linkedin_jobs(search_query, pages=1,
         submit = await tab.select("button[type='submit']", timeout=5)
         await submit.mouse_move()
         await submit.mouse_click()
+        messagebox.showinfo("Verify you've logged in.", "Before closing this box, verify that Linkedin has actually logged you in, and if it's giving some kind of 2FA, complete it first before closing this box.")
         print("Trying to save cookies.")
         await driver.cookies.save("cookies_linkedin.dat")
         print("Cookie saved!")
