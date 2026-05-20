@@ -1,6 +1,4 @@
 import time
-import tkinter.messagebox
-
 from credentials import email_login, linkedin_password
 from webdriver_manager.chrome import ChromeDriverManager
 from tkinter import messagebox
@@ -26,12 +24,14 @@ async def scrape_linkedin_jobs(search_query, pages=1,
                              location=""):
     driver = await uc.start()
     tab = await driver.get("https://www.linkedin.com/jobs")
+    sleepytime = False
     try:
         await driver.cookies.load("cookies_linkedin.dat")
         await tab.reload()
         print("Cookies collected!")
     except FileNotFoundError:
         print("Cookies not found")
+        sleepytime = True
     try:
         time.sleep(3)
         email_box = await tab.select("input[id='session_key']", timeout=5)
@@ -45,7 +45,8 @@ async def scrape_linkedin_jobs(search_query, pages=1,
         submit = await tab.select("button[type='submit']", timeout=5)
         await submit.mouse_move()
         await submit.mouse_click()
-        messagebox.showinfo("Verify you've logged in.", "Before closing this box, verify that Linkedin has actually logged you in, and if it's giving some kind of 2FA, complete it first before closing this box.")
+        if sleepytime:
+            time.sleep(30)
         print("Trying to save cookies.")
         await driver.cookies.save("cookies_linkedin.dat")
         print("Cookie saved!")
@@ -107,8 +108,6 @@ async def scrape_linkedin_jobs(search_query, pages=1,
     current_page = 0
     all_job_ids = []
     job_count = 0
-    if pages.is_integer():
-        pages = int(pages)
     max_jobs = int(pages * 25)
 
 
@@ -116,7 +115,7 @@ async def scrape_linkedin_jobs(search_query, pages=1,
         if job_count > max_jobs:
             break
         await tab
-        time.sleep(2)
+        time.sleep(10)
         job_ids = []
         job_cards = await tab.select_all("li[data-occludable-job-id]")
         print(len(job_cards))
@@ -190,5 +189,5 @@ async def scrape_linkedin_jobs(search_query, pages=1,
 
 
 if __name__ == "__main__":
-    asyncio.run(scrape_linkedin_jobs("Software Engineer", 5, location="106233382", date_filter="Any time", experience_filter=["Internship", "Associate"], salary_filter=3, remote_filter=["On-site", "Hybrid", "Remote"], max_jobs=4))
+    asyncio.run(scrape_linkedin_jobs("Software Engineer", 5, location="106233382", date_filter="Any time", experience_filter=["Internship", "Associate"], salary_filter=3, remote_filter=["On-site", "Hybrid", "Remote"]))
 
