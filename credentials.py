@@ -1,8 +1,8 @@
-# You may type in your linkedin credentials here. If they are not here, then the tool will prompt you to log in manually.
+# You may type in your linkedin credentials here.
 email_login = None
 linkedin_password = None
 
-# A chatgpt key is REQUIRED for this tool to work.
-chatgpt_api = None
+# A huggingface token is needed to make this work..
+hf_token = None
 
 
