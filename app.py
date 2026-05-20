@@ -207,7 +207,7 @@ async def home():
                     job_dict["score"] = 0
                 db_insert.append((datetime.now(), job_dict["score"], job_dict["company"], job_dict["title"],
                     job_dict["url"], job_dict["details"], job_dict["description"],
-                    job_dict["aalysis"],
+                    job_dict["analysis"],
                     job_dict["logo"], job_dict["description_html"], 
                     job_dict["confidence_rating"], job_dict["job_summary"]))
             cur.executemany(f""" INSERT INTO jobs (date, score, company, title, url, details, description, analysis, logo, description_html, confidence_rating, job_summary)
